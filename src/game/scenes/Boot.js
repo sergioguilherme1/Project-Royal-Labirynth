@@ -1,5 +1,6 @@
 import { Scene } from 'phaser';
 
+//criando a cena
 export class Boot extends Scene
 {
     constructor ()
@@ -9,15 +10,15 @@ export class Boot extends Scene
 
     preload ()
     {
-        //  The Boot Scene is typically used to load in any assets you require for your Preloader, such as a game logo or background.
-        //  The smaller the file size of the assets, the better, as the Boot Scene itself has no preloader.
+        // Cena Boot, usada para carregar assets usadas na cena preloader
 
-        this.load.image('background', 'assets/backgrounds/dungeon-bg-1024x768.png');
         this.load.image('logo', 'logo.png');
+        this.load.image('background', 'backgrounds/dungeon-bg-1024x768.png');
     }
 
     create ()
     {
+        //Mover para a cena preloader
         this.scene.start('Preloader');
     }
 }

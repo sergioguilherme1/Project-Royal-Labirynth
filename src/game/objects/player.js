@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 
+//Criando player
 export const createPlayer = (scene) => {
   const player = scene.physics.add.sprite(82, 80, 'player_idle');
   player.setScale(1.2, 1.2);
@@ -10,26 +11,28 @@ export const createPlayer = (scene) => {
   return player;
 };
 
+//Carregando sprites
 export const loadSprites = (scene) => {
-  scene.load.spritesheet('player_idle', 'Cedric.png', {
+  scene.load.spritesheet('player_idle', 'characters/Cedric.png', {
     frameWidth: 40,
     frameHeight: 40,
     spacing: 10,
   });
 
-  scene.load.spritesheet('player_walk', 'Cedric.png', {
+  scene.load.spritesheet('player_walk', 'characters/Cedric.png', {
     frameWidth: 40,
     frameHeight: 40,
     spacing: 10,
   });
 
-  scene.load.spritesheet('player_attack', 'Cedric.png', {
+  scene.load.spritesheet('player_attack', 'characters/Cedric.png', {
     frameWidth: 40,
     frameHeight: 40,
     spacing: 0,
   });
 };
 
+//Criando Aniamções
 export const createAnimations = (scene) => {
   scene.anims.create({
     key: 'idle_down',
@@ -80,6 +83,7 @@ export const createAnimations = (scene) => {
   });
 };
 
+//Atualizando sprites de  acordo com comandos executados
 export const updatePlayer = (player, cursors) => {
   const speed = 100;
   player.setVelocity(0);

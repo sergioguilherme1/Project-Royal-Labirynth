@@ -29,12 +29,12 @@
 
         preload ()
         {
-            //  Load the assets for the game - Replace with your own assets
+            // Carregar os assets do jogo
             this.load.setPath('assets');
 
             this.load.image('background', 'backgrounds/dungeon-bg-1024x768.png');
-            this.load.image('tiles', 'assetsmap.png');
-            this.load.tilemapTiledJSON('map', 'map.json');
+            this.load.image('tiles', 'maps/assetsmap.png');
+            this.load.tilemapTiledJSON('map', 'maps/map.json');
             this.load.audio("click", "audio/click.mp3");
             this.load.audio("menuMusic", "audio/menu-theme.mp3");
 
@@ -46,7 +46,7 @@
             //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
             //  For example, you can define global animations here, so we can use them in other scenes.
 
-            //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
+            //  Alterar para a cena MainMenu
             this.scene.start('MainMenu');
         }
     }
