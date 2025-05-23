@@ -11,8 +11,6 @@
 
         init ()
         {
-            //  We loaded this image in our Boot Scene, so we can display it here
-            this.add.image(512, 384, 'background');
 
             //  A simple progress bar. This is the outline of the bar.
             this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff);
@@ -34,8 +32,11 @@
             //  Load the assets for the game - Replace with your own assets
             this.load.setPath('assets');
 
+            this.load.image('background', 'backgrounds/dungeon-bg-1024x768.png');
             this.load.image('tiles', 'assetsmap.png');
             this.load.tilemapTiledJSON('map', 'map.json');
+            this.load.audio("click", "audio/click.mp3");
+            this.load.audio("menuMusic", "audio/menu-theme.mp3");
 
             loadSprites(this);
         }

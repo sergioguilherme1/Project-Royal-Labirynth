@@ -35,6 +35,9 @@
         "webpack-merge": "^6.0.0"
     },
     "dependencies": {
-        "phaser": "^3.88.2"
-    }
+        "phaser": "^3.88.2",
+        "typescript": "^5.8.3"
+    },
+    "description": "",
+    "keywords": []
 }
