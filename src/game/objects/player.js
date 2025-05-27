@@ -4,8 +4,8 @@ import Phaser from 'phaser';
 export const createPlayer = (scene) => {
   const player = scene.physics.add.sprite(82, 80, 'player');
   player.setScale(1.2);
-  player.setSize(20, 24);
-  player.setOffset(14, 14);
+  player.setSize(20, 16);
+  player.setOffset(14, 16);
   player.lastDirection = 'down';
   createAnimations(scene);
   return player;
@@ -14,12 +14,6 @@ export const createPlayer = (scene) => {
 //Carregando sprites
 export const loadSprites = (scene) => {
   scene.load.spritesheet('player', 'characters/Cedric.png', {
-    frameWidth: 48,
-    frameHeight: 48,
-    spacing: 0,
-  });
-
-  scene.load.spritesheet('player_attack', 'characters/Cedric.png', {
     frameWidth: 48,
     frameHeight: 48,
     spacing: 0,
@@ -57,30 +51,31 @@ export const createAnimations = (scene) => {
     repeat: -1
   });
 
+  //Animações personagem atacando
   scene.anims.create({
     key: 'attack_down',
-    frames: scene.anims.generateFrameNumbers('player_attack', { start: 50, end: 54 }),
+    frames: scene.anims.generateFrameNumbers('player', { start: 53, end: 56 }),
     frameRate: 8,
     repeat: 0
   });
 
   scene.anims.create({
     key: 'attack_left',
-    frames: scene.anims.generateFrameNumbers('player_attack', { start: 21, end: 25 }),
+    frames: scene.anims.generateFrameNumbers('player', { start: 65, end: 68 }),
     frameRate: 8,
     repeat: 0
   });
 
   scene.anims.create({
     key: 'attack_right',
-    frames: scene.anims.generateFrameNumbers('player_attack', { start: 22, end: 24 }),
+    frames: scene.anims.generateFrameNumbers('player', { start: 77, end: 80 }),
     frameRate: 8,
     repeat: 0
   });
 
   scene.anims.create({
     key: 'attack_up',
-    frames: scene.anims.generateFrameNumbers('player_attack', { start: 33, end: 35 }),
+    frames: scene.anims.generateFrameNumbers('player', { start: 89, end: 92 }),
     frameRate: 8,
     repeat: 0
   });
