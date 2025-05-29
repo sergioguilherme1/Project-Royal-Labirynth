@@ -28,12 +28,13 @@ export class Game extends Scene {
         map.createLayer('detalhes / agua', tiledset, 0, 0);
         map.createLayer('agua', tiledset, 0, 0);
 
-        this.restartKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-
         // Criando o player
         this.player = createPlayer(this);
         this.player.health = 3;
         this.player.maxHealth = 3;
+
+        // Reiniciar
+        this.restartKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
         // Criar grupo de corações coletáveis
         this.heartsGroup = this.physics.add.group();
@@ -115,14 +116,12 @@ export class Game extends Scene {
             F: Phaser.Input.Keyboard.KeyCodes.F
         });
 
-        // Tela de Game Over (inicialmente invisível)
+        // HUD Game Over
         const centerX = this.cameras.main.centerX;
         const centerY = this.cameras.main.centerY;
-
         this.gameOverText = this.add.text(centerX, centerY - 20, 'GAME OVER', {
             fontSize: '48px', fill: '#ff0000', fontFamily: 'monospace'
         }).setOrigin(0.5).setScrollFactor(0).setVisible(false);
-
         this.restartText = this.add.text(centerX, centerY + 30, 'Pressione R para reiniciar', {
             fontSize: '20px', fill: '#ffffff', fontFamily: 'monospace'
         }).setOrigin(0.5).setScrollFactor(0).setVisible(false);
@@ -130,13 +129,27 @@ export class Game extends Scene {
         this.isGameOver = false;
     }
 
+    update() {
+        if (this.isGameOver && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
+            this.scene.restart();
+        }
+
+        updatePlayer(this.player, this.cursors, this.keys);
+
+        if (Phaser.Input.Keyboard.JustDown(this.keys.F)) {
+            this.attackEnemy();
+        }
+
+        Phaser.Actions.Call(this.minions.getChildren(), (minion) => {
+            if (minion.preUpdate) minion.preUpdate();
+        });
+    }
+
     handleGameOver() {
         if (this.isGameOver) return;
-
         this.isGameOver = true;
         this.player.setVelocity(0);
         this.physics.pause();
-
         this.gameOverText.setVisible(true);
         this.restartText.setVisible(true);
     }
@@ -182,22 +195,6 @@ export class Game extends Scene {
                     minion.disableBody(true, true);
                 }
             }
-        });
-    }
-
-    update() {
-        if (this.isGameOver && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
-            this.scene.restart();
-        }
-
-        updatePlayer(this.player, this.cursors, this.keys);
-
-        if (Phaser.Input.Keyboard.JustDown(this.keys.F)) {
-            this.attackEnemy();
-        }
-
-        Phaser.Actions.Call(this.minions.getChildren(), (minion) => {
-            if (minion.preUpdate) minion.preUpdate();
         });
     }
 }
