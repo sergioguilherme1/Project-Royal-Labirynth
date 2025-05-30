@@ -54,7 +54,7 @@ npm run build
 ## 🎮 Controles do Jogo
 
 - Setas do teclado (↑ ↓ ← →): movimentar o personagem
-- Espaço (ou outro): ações futuras (como ataque)
+- Tecla F: ataque
 
 ## 📦 Funcionalidades Atuais
 
