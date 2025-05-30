@@ -39,11 +39,11 @@ export default class Minion extends Phaser.Physics.Arcade.Sprite {
         this.attackCooldown = time + this.attackRate;
         this.play('orc_attack', true); // Animação de ataque do lacaio
 
-        if (this.target.currentHealth > 0) {
-          this.target.currentHealth--;
+        if (this.target.health > 0) {
+          this.target.health--;
           this.scene.updateHearts();
 
-          if (this.target.currentHealth <= 0) {
+          if (this.target.health <= 0) {
             this.target.setVelocity(0);
             this.target.play('player_die');
 
