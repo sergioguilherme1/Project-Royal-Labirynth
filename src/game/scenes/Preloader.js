@@ -1,5 +1,6 @@
 import { Scene } from 'phaser';
 import { loadSprites } from '../objects/player';
+import { loadMinionSprites } from '../objects/minion';
 
 export class Preloader extends Scene {
     constructor() {
@@ -37,11 +38,7 @@ export class Preloader extends Scene {
         this.load.image('heart_item', 'items/heart_full.png');
 
         // Lacaios (minions)
-        this.load.spritesheet('minion', 'characters/Orc.png', {
-            frameWidth: 32,
-            frameHeight: 32
-        });
-
+        loadMinionSprites(this);
         // Jogador
         loadSprites(this);
     }

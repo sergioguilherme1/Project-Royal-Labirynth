@@ -2,7 +2,8 @@
 import { Scene } from 'phaser';
 import { createPlayer } from '../objects/player';
 import { updatePlayer } from '../objects/player';
-import Minion from '../objects/minion';
+import Minion, { createMinionAnimations } from '../objects/minion';
+
 
 export class Game extends Scene {
     player;
@@ -72,14 +73,6 @@ export class Game extends Scene {
             const minion = new Minion(this, pos.x, pos.y, 'minion', this.player);
             this.minions.add(minion);
         });
-
-        // Animações
-        this.anims.create({ key: 'orc_idle', frames: this.anims.generateFrameNumbers('minion', { start: 0, end: 7 }), frameRate: 6, repeat: -1 });
-        this.anims.create({ key: 'orc_walk', frames: this.anims.generateFrameNumbers('minion', { start: 8, end: 15 }), frameRate: 8, repeat: -1 });
-        this.anims.create({ key: 'orc_attack', frames: this.anims.generateFrameNumbers('minion', { start: 16, end: 23 }), frameRate: 10, repeat: 0 });
-        this.anims.create({ key: 'orc_hit', frames: this.anims.generateFrameNumbers('minion', { start: 24, end: 31 }), frameRate: 12, repeat: 0 });
-        this.anims.create({ key: 'orc_die', frames: this.anims.generateFrameNumbers('minion', { start: 32, end: 39 }), frameRate: 8, repeat: 0 });
-        this.anims.create({ key: 'player_die', frames: this.anims.generateFrameNumbers('player', { start: 8, end: 11 }), frameRate: 8, repeat: 0 });
 
         // HUD de vida
         for (let i = 0; i < this.player.maxHealth; i++) {

@@ -4,8 +4,8 @@ import Phaser from 'phaser';
 export const createPlayer = (scene) => {
   const player = scene.physics.add.sprite(82, 80, 'player');
   player.setScale(1.2);
-  player.setSize(20, 16);
-  player.setOffset(14, 16);
+  player.setSize(18, 10);
+  player.setOffset(14, 24);
   player.lastDirection = 'down';
 
   // Vida do jogador
@@ -39,8 +39,6 @@ export const createAnimations = (scene) => {
   scene.anims.create({ key: 'attack_right', frames: scene.anims.generateFrameNumbers('player', { start: 77, end: 80 }), frameRate: 8, repeat: 0 });
   scene.anims.create({ key: 'attack_up', frames: scene.anims.generateFrameNumbers('player', { start: 89, end: 92 }), frameRate: 8, repeat: 0 });
 
-  // Morte
-  scene.anims.create({ key: 'player_die', frames: scene.anims.generateFrameNumbers('player', { start: 8, end: 11 }), frameRate: 8, repeat: 0 });
 };
 
 // Atualiza o jogador conforme teclas

@@ -63,5 +63,51 @@ export default class Minion extends Phaser.Physics.Arcade.Sprite {
         this.play('orc_walk');
       }
     }
-  }
+  }  
 }
+
+export const loadMinionSprites = (scene) => {
+  scene.load.spritesheet('minion', 'characters/Lacaios.png', {
+    frameWidth: 48,
+    frameHeight: 48,
+    spacing: 0
+  });
+};
+
+// Cria animações dos lacaios
+export const createMinionAnimations = (scene) => {
+  scene.anims.create({
+    key: 'orc_idle',
+    frames: scene.anims.generateFrameNumbers('minion', { start: 0, end: 7 }),
+    frameRate: 6,
+    repeat: -1
+  });
+
+  scene.anims.create({
+    key: 'orc_walk',
+    frames: scene.anims.generateFrameNumbers('minion', { start: 8, end: 15 }),
+    frameRate: 8,
+    repeat: -1
+  });
+
+  scene.anims.create({
+    key: 'orc_attack',
+    frames: scene.anims.generateFrameNumbers('minion', { start: 16, end: 23 }),
+    frameRate: 10,
+    repeat: 0
+  });
+
+  scene.anims.create({
+    key: 'orc_hit',
+    frames: scene.anims.generateFrameNumbers('minion', { start: 24, end: 31 }),
+    frameRate: 12,
+    repeat: 0
+  });
+
+  scene.anims.create({
+    key: 'orc_die',
+    frames: scene.anims.generateFrameNumbers('minion', { start: 32, end: 39 }),
+    frameRate: 8,
+    repeat: 0
+  });
+};
