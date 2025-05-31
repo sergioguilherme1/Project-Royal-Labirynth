@@ -9,58 +9,62 @@ export default class Minion extends Phaser.Physics.Arcade.Sprite {
 
     this.target = target;
     this.setScale(1.3);
+    this.setSize(18, 18); 
     this.setCollideWorldBounds(true);
     this.body.setImmovable(false);
 
     this.speed = 50;
-    this.health = 2;
+    //this.health = 2;
 
-    // Ataque
-    this.attackCooldown = 0;
-    this.attackRange = 40;
-    this.attackRate = 1000;
+    this.patrolPoints = [
+      { x: x, y: y },
+      { x: x + 100, y: y }
+    ];
+    this.currentPatrolIndex = 1;
 
-    this.play('orc_walk');
+    this.play('minion_walk_down'); // animação inicial
   }
+    // Ataque
+    // this.attackCooldown = 0;
+    // this.attackRange = 40;
+    // this.attackRate = 1000;
 
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
 
-    if (!this.active || !this.target?.active) return;
+    if (!this.active) return;
 
-    const dx = this.target.x - this.x;
-    const dy = this.target.y - this.y;
+    const targetPoint = this.patrolPoints[this.currentPatrolIndex];
+    const dx = targetPoint.x - this.x;
+    const dy = targetPoint.y - this.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    if (distance <= this.attackRange) {
-      this.setVelocity(0); // Para de andar
-
-      if (time > this.attackCooldown) {
-        this.attackCooldown = time + this.attackRate;
-        this.play('orc_attack', true); // Animação de ataque do lacaio
-
-        if (this.target.health > 0) {
-          this.target.health--;
-          this.scene.updateHearts();
-
-          if (this.target.health <= 0) {
-            this.target.setVelocity(0);
-            this.target.play('player_die');
-
-            this.target.once('animationcomplete', () => {
-              this.scene.handleGameOver();
-            });
-          }
-        }
-      }
+    if (distance < 4) {
+      this.currentPatrolIndex = (this.currentPatrolIndex + 1) % this.patrolPoints.length;
+      this.setVelocity(0);
     } else {
-      // Persegue o jogador
       const angle = Math.atan2(dy, dx);
       this.setVelocity(Math.cos(angle) * this.speed, Math.sin(angle) * this.speed);
 
-      // Toca animação de andar, se necessário
-      if (!this.anims.isPlaying || this.anims.getName() !== 'orc_walk') {
-        this.play('orc_walk');
+      const currentAnim = this.anims.getName();
+      let desiredAnim;
+      // Troca animação de caminhada conforme direção
+      if (Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 0) {
+          desiredAnim = 'minion_walk_right';
+        } else {
+          desiredAnim = 'minion_walk_left';
+        }
+      } else {
+        if (dy > 0) {
+          desiredAnim = 'minion_walk_down';
+        } else {
+          desiredAnim = 'minion_walk_up';
+        }
+      }
+
+      if (!currentAnim || currentAnim !== desiredAnim) {
+      this.play(desiredAnim, true);
       }
     }
   }  
@@ -79,7 +83,7 @@ export const createMinionAnimations = (scene) => {
 
   scene.anims.create({
     key: 'minion_walk_down',
-    frames: scene.anims.generateFrameNumbers('minion', { start: 0, end: 3 }),
+    frames: scene.anims.generateFrameNumbers('minion', { start: 0, end: 2 }),
     frameRate: 8,
     repeat: -1
   });

@@ -1,4 +1,3 @@
-// ... (importações)
 import { Scene } from 'phaser';
 import { createPlayer } from '../objects/player';
 import { updatePlayer } from '../objects/player';
@@ -63,15 +62,19 @@ export class Game extends Scene {
         this.physics.add.overlap(this.player, this.coins, this.collectCoin, null, this);
 
         // Lacaios
+        createMinionAnimations(this);
         this.minions = this.physics.add.group();
-        [
-            { x: 300, y: 400 },
-            { x: 500, y: 250 },
-            { x: 700, y: 350 },
-            { x: 800, y: 450 } // mantida a versão com mais lacaios
-        ].forEach(pos => {
-            const minion = new Minion(this, pos.x, pos.y, 'minion', this.player);
-            this.minions.add(minion);
+        const patrolZones = [
+            [ { x: 320, y: 520 }, { x: 320, y: 190 } ],  // minion 1
+            [ { x: 50, y: 350 }, { x: 50, y: 500 } ],  // minion 2  
+        ];
+
+        patrolZones.forEach(zone => {
+        const startPos = zone[0];
+        const minion = new Minion(this, startPos.x, startPos.y, 'minion', this.player);
+        minion.patrolPoints = zone;
+        minion.currentPatrolIndex = 1;
+        this.minions.add(minion);
         });
 
         // HUD de vida
@@ -127,10 +130,6 @@ export class Game extends Scene {
         if (Phaser.Input.Keyboard.JustDown(this.keys.F)) {
             this.attackEnemy();
         }
-
-        Phaser.Actions.Call(this.minions.getChildren(), (minion) => {
-            if (minion.preUpdate) minion.preUpdate();
-        });
     }
 
     handleGameOver() {
