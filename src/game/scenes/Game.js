@@ -1,9 +1,7 @@
-// ... (importações)
 import { Scene } from 'phaser';
 import { createPlayer } from '../objects/player';
 import { updatePlayer } from '../objects/player';
-import Minion, { createMinionAnimations } from '../objects/minion';
-
+import Minion from '../objects/minion';
 
 export class Game extends Scene {
     player;
@@ -23,7 +21,7 @@ export class Game extends Scene {
         map.createLayer('fundo', tiledset, 0, 0);
         map.createLayer('chao', tiledset, 0, 0);
         const parede = map.createLayer('parede', tiledset, 0, 0);
-        parede.setCollisionByProperty({ collides: true }); // mantido esse como versão mais completa
+        parede.setCollisionByProperty({ collides: true });
         map.createLayer('detalhes', tiledset, 0, 0);
         map.createLayer('itens', tiledset, 0, 0);
         map.createLayer('pilar', tiledset, 0, 0);
@@ -68,7 +66,7 @@ export class Game extends Scene {
             { x: 300, y: 400 },
             { x: 500, y: 250 },
             { x: 700, y: 350 },
-            { x: 800, y: 450 } // mantida a versão com mais lacaios
+            { x: 800, y: 450 }
         ].forEach(pos => {
             const minion = new Minion(this, pos.x, pos.y, 'minion', this.player);
             this.minions.add(minion);
@@ -87,6 +85,38 @@ export class Game extends Scene {
         this.coinText = this.add.text(180, 8, '0', {
             fontSize: '16px', fill: '#fff', fontFamily: 'monospace'
         }).setScrollFactor(0);
+
+        // ---------- BOTÃO VOLTAR AO MENU (BOTÃO SUBIDO) ----------
+        const backButtonX = 270;  // Mantido próximo do HUD
+        const backButtonY = 18;   // Subido um pouco
+
+        const backButtonBg = this.add.rectangle(backButtonX, backButtonY, 110, 32, 0x1e1e2f)
+            .setStrokeStyle(3, 0xffd700)
+            .setInteractive({ useHandCursor: true })
+            .setScrollFactor(0);
+
+        const backButtonText = this.add.text(backButtonX, backButtonY, "Voltar ao Menu", {
+            fontFamily: "Arial",
+            fontSize: "14px",
+            color: "#FFD700"
+        }).setOrigin(0.5).setScrollFactor(0);
+
+        const backButton = this.add.container(0, 0, [backButtonBg, backButtonText]);
+
+        backButtonBg.on("pointerover", () => {
+            backButtonBg.setFillStyle(0x294d77);
+            backButtonText.setColor("#ffffff");
+        });
+
+        backButtonBg.on("pointerout", () => {
+            backButtonBg.setFillStyle(0x1e1e2f);
+            backButtonText.setColor("#FFD700");
+        });
+
+        backButtonBg.on("pointerdown", () => {
+            this.sound.play("click"); // Som "click" se disponível
+            this.scene.start("MainMenu");
+        });
 
         // Colisões
         parede.setCollisionByExclusion([-1]);
