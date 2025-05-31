@@ -76,38 +76,89 @@ export const loadMinionSprites = (scene) => {
 
 // Cria animações dos lacaios
 export const createMinionAnimations = (scene) => {
-  scene.anims.create({
-    key: 'orc_idle',
-    frames: scene.anims.generateFrameNumbers('minion', { start: 0, end: 7 }),
-    frameRate: 6,
-    repeat: -1
-  });
 
   scene.anims.create({
-    key: 'orc_walk',
-    frames: scene.anims.generateFrameNumbers('minion', { start: 8, end: 15 }),
+    key: 'minion_walk_down',
+    frames: scene.anims.generateFrameNumbers('minion', { start: 0, end: 3 }),
     frameRate: 8,
     repeat: -1
   });
 
   scene.anims.create({
-    key: 'orc_attack',
-    frames: scene.anims.generateFrameNumbers('minion', { start: 16, end: 23 }),
+    key: 'minion_walk_left',
+    frames: scene.anims.generateFrameNumbers('minion', { start: 23, end: 25 }),
+    frameRate: 8,
+    repeat: -1
+  });
+
+  scene.anims.create({
+    key: 'minion_walk_right',
+    frames: scene.anims.generateFrameNumbers('minion', { start: 46, end: 48 }),
+    frameRate: 8,
+    repeat: -1
+  });
+
+  scene.anims.create({
+    key: 'minion_walk_up',
+    frames: scene.anims.generateFrameNumbers('minion', { start: 69, end: 71 }),
+    frameRate: 8,
+    repeat: -1
+  });
+
+  scene.anims.create({
+    key: 'minion_attack_down',
+    frames: scene.anims.generateFrameNumbers('minion', { start: 10, end: 13 }),
     frameRate: 10,
     repeat: 0
   });
 
   scene.anims.create({
-    key: 'orc_hit',
-    frames: scene.anims.generateFrameNumbers('minion', { start: 24, end: 31 }),
-    frameRate: 12,
+    key: 'minion_attack_left',
+    frames: scene.anims.generateFrameNumbers('minion', { start: 33, end: 36 }),
+    frameRate: 10,
     repeat: 0
   });
 
   scene.anims.create({
-    key: 'orc_die',
-    frames: scene.anims.generateFrameNumbers('minion', { start: 32, end: 39 }),
+    key: 'minion_attack_right',
+    frames: scene.anims.generateFrameNumbers('minion', { start: 56, end: 59 }),
+    frameRate: 10,
+    repeat: 0
+  });
+
+  scene.anims.create({
+    key: 'minion_attack_up',
+    frames: scene.anims.generateFrameNumbers('minion', { start: 79, end: 82 }),
+    frameRate: 10,
+    repeat: 0
+  });
+
+  scene.anims.create({
+    key: 'minion_die_down',
+    frames: [ { key: 'minion', frame: 22 } ],
+    frameRate: 8,
+    repeat: 0
+  });
+
+  scene.anims.create({
+    key: 'minion_die_left',
+    frames: [ { key: 'minion', frame: 45 } ],
+    frameRate: 8,
+    repeat: 0
+  });
+
+  scene.anims.create({
+    key: 'minion_die_right',
+    frames: [ { key: 'minion', frame: 68 } ],
+    frameRate: 8,
+    repeat: 0
+  });
+
+  scene.anims.create({
+    key: 'minion_die_up',
+    frames: [ { key: 'minion', frame: 91 } ],
     frameRate: 8,
     repeat: 0
   });
 };
+  

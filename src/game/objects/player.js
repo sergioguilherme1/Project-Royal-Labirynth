@@ -28,16 +28,55 @@ export const loadSprites = (scene) => {
 // Criação de animações
 export const createAnimations = (scene) => {
   // Andar
-  scene.anims.create({ key: 'walk_down', frames: scene.anims.generateFrameNumbers('player', { start: 0, end: 2 }), frameRate: 8, repeat: -1 });
-  scene.anims.create({ key: 'walk_left', frames: scene.anims.generateFrameNumbers('player', { start: 12, end: 14 }), frameRate: 8, repeat: -1 });
-  scene.anims.create({ key: 'walk_right', frames: scene.anims.generateFrameNumbers('player', { start: 24, end: 26 }), frameRate: 8, repeat: -1 });
-  scene.anims.create({ key: 'walk_up', frames: scene.anims.generateFrameNumbers('player', { start: 36, end: 38 }), frameRate: 8, repeat: -1 });
+  scene.anims.create({ 
+    key: 'walk_down', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 0, end: 2 }), 
+    frameRate: 8, 
+    repeat: -1 
+  });
+  scene.anims.create({ 
+    key: 'walk_left', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 12, end: 14 }), 
+    frameRate: 8, 
+    repeat: -1 
+  });
+  scene.anims.create({ 
+    key: 'walk_right', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 24, end: 26 }), 
+    frameRate: 8, 
+    repeat: -1 
+  });
+  scene.anims.create({ 
+    key: 'walk_up', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 36, end: 38 }), 
+    frameRate: 8, 
+    repeat: -1 });
 
   // Ataques
-  scene.anims.create({ key: 'attack_down', frames: scene.anims.generateFrameNumbers('player', { start: 53, end: 56 }), frameRate: 8, repeat: 0 });
-  scene.anims.create({ key: 'attack_left', frames: scene.anims.generateFrameNumbers('player', { start: 65, end: 68 }), frameRate: 8, repeat: 0 });
-  scene.anims.create({ key: 'attack_right', frames: scene.anims.generateFrameNumbers('player', { start: 77, end: 80 }), frameRate: 8, repeat: 0 });
-  scene.anims.create({ key: 'attack_up', frames: scene.anims.generateFrameNumbers('player', { start: 89, end: 92 }), frameRate: 8, repeat: 0 });
+  scene.anims.create({ 
+    key: 'attack_down', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 53, end: 56 }), 
+    frameRate: 8, 
+    repeat: 0 
+  });
+  scene.anims.create({ 
+    key: 'attack_left', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 65, end: 68 }), 
+    frameRate: 8, 
+    repeat: 0 
+  });
+  scene.anims.create({ 
+    key: 'attack_right', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 77, end: 80 }), 
+    frameRate: 8, 
+    repeat: 0 
+  });
+  scene.anims.create({ 
+    key: 'attack_up', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 89, end: 92 }), 
+    frameRate: 8, 
+    repeat: 0 
+  });
 
 };
 
