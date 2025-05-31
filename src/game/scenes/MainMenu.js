@@ -20,8 +20,7 @@ export class MainMenu extends Scene {
     this.logo = this.add.image(512, 280, "logo");
     this.logo.setTint(0xeeeeff); // tom levemente azulado
 
-    // Fundo do botão
-    // Criar fundo e texto separadamente
+    // Fundo do botão Iniciar
     const buttonBg = this.add
       .rectangle(0, 0, 200, 60, 0x1e1e2f)
       .setStrokeStyle(3, 0xffd700)
@@ -37,10 +36,8 @@ export class MainMenu extends Scene {
       .setOrigin(0.5)
       .setShadow(2, 2, "#000000", 3, false, true);
 
-    // Criar o container com os dois juntos
     const startButton = this.add.container(512, 460, [buttonBg, buttonText]);
 
-    // Animação de pulsação no container
     this.tweens.add({
       targets: startButton,
       scaleX: 1.06,
@@ -51,7 +48,6 @@ export class MainMenu extends Scene {
       repeat: -1,
     });
 
-    // Hover e interações
     buttonBg.on("pointerover", () => {
       buttonBg.setFillStyle(0x294d77);
       buttonText.setColor("#ffffff");
@@ -81,5 +77,89 @@ export class MainMenu extends Scene {
     // Música de fundo
     this.menuMusic = this.sound.add("menuMusic", { loop: true, volume: 0.5 });
     this.menuMusic.play();
+
+    // Botão pause/play
+
+    // Posição do botão
+    const musicButton = this.add.container(940, 720);
+
+    // Fundo do botão
+    const musicButtonBg = this.add
+      .rectangle(0, 0, 100, 50, 0x1e1e2f)
+      .setStrokeStyle(3, 0xffd700)
+      .setInteractive({ useHandCursor: true });
+    musicButton.add(musicButtonBg);
+
+    // Ícone pausa
+    const pauseIcon = this.add.graphics();
+    pauseIcon.fillStyle(0xFFD700, 1);
+    pauseIcon.fillRect(-15, -15, 10, 30);
+    pauseIcon.fillRect(5, -15, 10, 30);   
+    musicButton.add(pauseIcon);
+
+    // Ícone retomar
+    const playIcon = this.add.graphics();
+    playIcon.fillStyle(0xFFD700, 1);
+    playIcon.beginPath();
+    playIcon.moveTo(-10, -15);
+    playIcon.lineTo(15, 0);
+    playIcon.lineTo(-10, 15);
+    playIcon.closePath();
+    playIcon.fillPath();
+    musicButton.add(playIcon);
+
+    // Mostrar pause e esconder play
+    pauseIcon.setVisible(true);
+    playIcon.setVisible(false);
+
+    // Alternar pausa/retomar música e ícones
+    musicButtonBg.on("pointerdown", () => {
+      if (this.menuMusic.isPlaying) {
+        this.menuMusic.pause();
+        pauseIcon.setVisible(false);
+        playIcon.setVisible(true);
+      } else if (this.menuMusic.isPaused) {
+        this.menuMusic.resume();
+        pauseIcon.setVisible(true);
+        playIcon.setVisible(false);
+      }
+    });
+
+    // Hover: muda cor do fundo e dos ícones
+    musicButtonBg.on("pointerover", () => {
+      musicButtonBg.setFillStyle(0x294d77);
+      pauseIcon.clear();
+      pauseIcon.fillStyle(0xffffff, 1);
+      pauseIcon.fillRect(-15, -15, 10, 30);
+      pauseIcon.fillRect(5, -15, 10, 30);
+
+      playIcon.clear();
+      playIcon.fillStyle(0xffffff, 1);
+      playIcon.beginPath();
+      playIcon.moveTo(-10, -15);
+      playIcon.lineTo(15, 0);
+      playIcon.lineTo(-10, 15);
+      playIcon.closePath();
+      playIcon.fillPath();
+    });
+
+    // Hover out: volta cor original dourada
+    musicButtonBg.on("pointerout", () => {
+      musicButtonBg.setFillStyle(0x1e1e2f);
+
+      pauseIcon.clear();
+      pauseIcon.fillStyle(0xFFD700, 1);
+      pauseIcon.fillRect(-15, -15, 10, 30);
+      pauseIcon.fillRect(5, -15, 10, 30);
+
+      playIcon.clear();
+      playIcon.fillStyle(0xFFD700, 1);
+      playIcon.beginPath();
+      playIcon.moveTo(-10, -15);
+      playIcon.lineTo(15, 0);
+      playIcon.lineTo(-10, 15);
+      playIcon.closePath();
+      playIcon.fillPath();
+    });
   }
 }
