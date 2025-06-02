@@ -2,7 +2,13 @@ import { Scene } from 'phaser';
 import { createPlayer } from '../objects/player';
 import { updatePlayer } from '../objects/player';
 import Minion, { createMinionAnimations } from '../objects/minion';
-import Boss from '../objects/boss';
+import Boss, {
+  loadBossSprites,
+  loadBossAtackSprites,
+  loadBossMortSprites,
+  createBossAnimations
+} from '../objects/boss'; // ajuste o caminho conforme sua estrutura
+
 
 
 
@@ -37,6 +43,26 @@ export class Game extends Scene {
         this.player.health = 3;
         this.player.maxHealth = 3;
 
+        //Boss
+        createBossAnimations(this);
+
+        // Criar patrulha personalizada (opcional)
+        const bossPatrol = [
+        { x: 900, y: 700 },
+        { x: 940, y: 700 },
+        { x: 940, y: 650 },
+        { x: 900, y: 650 },
+        ];
+
+        // Cria o Boss e aplica patrulha
+        this.boss = new Boss(this, bossPatrol[0].x, bossPatrol[0].y, 'boss', this.player);
+        this.boss.patrolPoints = bossPatrol;
+        this.boss.currentPatrolIndex = 1;
+
+
+
+
+
         //Criando lacaios
         createMinionAnimations(this);
         this.minions = this.physics.add.group();
@@ -44,16 +70,6 @@ export class Game extends Scene {
             [ { x: 150, y: 470}, { x: 300, y: 470 } ],  // minion 1
             [ { x: 50, y: 350 }, { x: 50, y: 500 } ],  // minion 2  
         ];
-
-        //boss
-    
-        this.boss = new Boss(this, 890, 680, 'boss', this.player);
-        this.physics.add.collider(this.boss, parede);
-        this.physics.add.collider(this.boss, this.player, () => {
-        // lógica de dano ou efeito
-        });
-
-
 
         patrolZones.forEach(zone => {
         const startPos = zone[0];
@@ -108,6 +124,10 @@ export class Game extends Scene {
         this.physics.add.collider(this.player, parede);
         this.physics.add.collider(this.minions, parede);
         this.physics.add.collider(this.minions, this.player);
+        this.physics.add.collider(this.boss, parede);
+        this.physics.add.collider(this.boss, this.player, () => {
+        // lógica de dano ou efeito
+        });
 
         // Teclado
         this.cursors = this.input.keyboard.createCursorKeys();
