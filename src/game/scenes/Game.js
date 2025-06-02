@@ -43,9 +43,9 @@ export class Game extends Scene {
         this.heartsGroup = this.physics.add.group();
         [
             { x: 40, y: 650 },
-            { x: 425, y: 78 },
+            { x: 424, y: 87 },
             { x: 758, y: 647 },
-            { x: 935, y: 125 }
+            { x: 928, y: 115 }
         ].forEach(pos => {
             const heart = this.heartsGroup.create(pos.x, pos.y, 'heart_item');
             heart.setScale(0.03);
