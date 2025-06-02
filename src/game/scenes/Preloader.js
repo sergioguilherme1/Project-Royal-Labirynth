@@ -41,6 +41,13 @@ export class Preloader extends Scene {
         loadMinionSprites(this);
         // Jogador
         loadSprites(this);
+        //Boss
+        this.load.spritesheet('boss', 'characters/Boss.png', {
+        frameWidth: 64,  // ajuste se necessário
+        frameHeight: 64, // ajuste se necessário
+        spacing: 0
+        });
+
     }
 
     create() {

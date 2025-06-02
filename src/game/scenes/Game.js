@@ -2,6 +2,8 @@ import { Scene } from 'phaser';
 import { createPlayer } from '../objects/player';
 import { updatePlayer } from '../objects/player';
 import Minion, { createMinionAnimations } from '../objects/minion';
+import Boss from '../objects/boss';
+
 
 
 export class Game extends Scene {
@@ -42,6 +44,16 @@ export class Game extends Scene {
             [ { x: 150, y: 470}, { x: 300, y: 470 } ],  // minion 1
             [ { x: 50, y: 350 }, { x: 50, y: 500 } ],  // minion 2  
         ];
+
+        //boss
+    
+this.boss = new Boss(this, 890, 680, 'boss', this.player);
+this.physics.add.collider(this.boss, parede);
+this.physics.add.collider(this.boss, this.player, () => {
+  // lógica de dano ou efeito
+});
+
+
 
         patrolZones.forEach(zone => {
         const startPos = zone[0];
