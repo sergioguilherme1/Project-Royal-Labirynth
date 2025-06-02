@@ -19,16 +19,14 @@ export class Game extends Scene {
     create() {
         // Criando o mapa
         const map = this.make.tilemap({ key: 'map' });
-        const tiledset = map.addTilesetImage('assests', 'tiles');
-        map.createLayer('fundo', tiledset, 0, 0);
+        const tiledset = map.addTilesetImage('assets', 'tiles');
+        map.createLayer('fundo preto', tiledset, 0, 0);
         map.createLayer('chao', tiledset, 0, 0);
         const parede = map.createLayer('parede', tiledset, 0, 0);
         parede.setCollisionByProperty({ collides: true }); // mantido esse como versão mais completa
-        map.createLayer('detalhes', tiledset, 0, 0);
-        map.createLayer('itens', tiledset, 0, 0);
-        map.createLayer('pilar', tiledset, 0, 0);
-        map.createLayer('cachoeira', tiledset, 0, 0);
-        map.createLayer('detalhes / agua', tiledset, 0, 0);
+        map.createLayer('detalhe do chao', tiledset, 0, 0);
+        map.createLayer('portao', tiledset, 0, 0);
+        map.createLayer('objetos', tiledset, 0, 0);
         map.createLayer('agua', tiledset, 0, 0);
 
         // Criando o player
