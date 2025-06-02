@@ -4,8 +4,8 @@ import Phaser from 'phaser';
 export const createPlayer = (scene) => {
   const player = scene.physics.add.sprite(82, 80, 'player');
   player.setScale(1.2);
-  player.setSize(18, 10);
-  player.setOffset(14, 24);
+  player.setSize(11, 10);
+  player.setOffset(18, 22);
   player.lastDirection = 'down';
 
   // Vida do jogador
@@ -31,25 +31,25 @@ export const createAnimations = (scene) => {
   scene.anims.create({ 
     key: 'walk_down', 
     frames: scene.anims.generateFrameNumbers('player', { start: 0, end: 2 }), 
-    frameRate: 8, 
+    frameRate: 7, 
     repeat: -1 
   });
   scene.anims.create({ 
     key: 'walk_left', 
     frames: scene.anims.generateFrameNumbers('player', { start: 12, end: 14 }), 
-    frameRate: 8, 
+    frameRate: 7, 
     repeat: -1 
   });
   scene.anims.create({ 
     key: 'walk_right', 
     frames: scene.anims.generateFrameNumbers('player', { start: 24, end: 26 }), 
-    frameRate: 8, 
+    frameRate: 7, 
     repeat: -1 
   });
   scene.anims.create({ 
     key: 'walk_up', 
     frames: scene.anims.generateFrameNumbers('player', { start: 36, end: 38 }), 
-    frameRate: 8, 
+    frameRate: 7, 
     repeat: -1 });
 
   // Ataques
@@ -82,7 +82,7 @@ export const createAnimations = (scene) => {
 
 // Atualiza o jogador conforme teclas
 export const updatePlayer = (player, cursors, keys) => {
-  const speed = 100;
+  const speed = 80;
 
   if (player.anims.currentAnim?.key?.startsWith('attack') && player.anims.isPlaying) return;
 

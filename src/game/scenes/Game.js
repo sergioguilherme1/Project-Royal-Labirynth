@@ -35,6 +35,22 @@ export class Game extends Scene {
         this.player.health = 3;
         this.player.maxHealth = 3;
 
+        //Criando lacaios
+        createMinionAnimations(this);
+        this.minions = this.physics.add.group();
+        const patrolZones = [
+            [ { x: 150, y: 470}, { x: 300, y: 470 } ],  // minion 1
+            [ { x: 50, y: 350 }, { x: 50, y: 500 } ],  // minion 2  
+        ];
+
+        patrolZones.forEach(zone => {
+        const startPos = zone[0];
+        const minion = new Minion(this, startPos.x, startPos.y, 'minion', this.player);
+        minion.patrolPoints = zone;
+        minion.currentPatrolIndex = 1;
+        this.minions.add(minion);
+        });
+
         this.restartKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
         // Corações no mapa
@@ -60,22 +76,6 @@ export class Game extends Scene {
             coin.setBounce(0.5);
         });
         this.physics.add.overlap(this.player, this.coins, this.collectCoin, null, this);
-
-        // Lacaios
-        createMinionAnimations(this);
-        this.minions = this.physics.add.group();
-        const patrolZones = [
-            [ { x: 320, y: 520 }, { x: 320, y: 190 } ],  // minion 1
-            [ { x: 50, y: 350 }, { x: 50, y: 500 } ],  // minion 2  
-        ];
-
-        patrolZones.forEach(zone => {
-        const startPos = zone[0];
-        const minion = new Minion(this, startPos.x, startPos.y, 'minion', this.player);
-        minion.patrolPoints = zone;
-        minion.currentPatrolIndex = 1;
-        this.minions.add(minion);
-        });
 
         // HUD de vida
         for (let i = 0; i < this.player.maxHealth; i++) {
