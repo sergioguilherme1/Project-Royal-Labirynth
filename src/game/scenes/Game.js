@@ -23,12 +23,14 @@ export class Game extends Scene {
         map.createLayer('fundo preto', tiledset, 0, 0);
         map.createLayer('chao', tiledset, 0, 0);
         const parede = map.createLayer('parede', tiledset, 0, 0);
-        parede.setCollisionByProperty({ collides: true }); // mantido esse como versão mais completa
+        parede.setCollisionByProperty({ collides: true }); 
         map.createLayer('detalhe do chao', tiledset, 0, 0);
         map.createLayer('portao', tiledset, 0, 0);
-        map.createLayer('objetos', tiledset, 0, 0);
         map.createLayer('agua', tiledset, 0, 0);
         map.createLayer('detalhes', tiledset, 0, 0);
+        map.createLayer('fim', tiledset, 0, 0);
+        const objetos = map.createLayer('objetos', tiledset, 0, 0);
+        objetos.setCollisionByProperty({ collides: true });
 
         // Criando o player
         this.player = createPlayer(this);
@@ -40,8 +42,10 @@ export class Game extends Scene {
         // Corações no mapa
         this.heartsGroup = this.physics.add.group();
         [
-            { x: 400, y: 200 },
-            { x: 800, y: 300 }
+            { x: 40, y: 650 },
+            { x: 425, y: 78 },
+            { x: 758, y: 647 },
+            { x: 935, y: 125 }
         ].forEach(pos => {
             const heart = this.heartsGroup.create(pos.x, pos.y, 'heart_item');
             heart.setScale(0.03);
@@ -51,9 +55,17 @@ export class Game extends Scene {
         // Moedas
         this.coins = this.physics.add.group();
         [
-            { x: 300, y: 100 },
-            { x: 500, y: 200 },
-            { x: 700, y: 400 }
+            { x: 45, y: 502 },
+            { x: 184, y: 715 },
+            { x: 440, y: 727 },
+            { x: 805, y: 487 },
+            { x: 184, y: 255 },
+            { x: 451, y: 593 },
+            { x: 473, y: 214 },
+            { x: 855, y: 721 },
+            { x: 978, y: 372 },
+            { x: 767, y: 132 }
+
         ].forEach(pos => {
             const coin = this.coins.create(pos.x, pos.y, 'coin');
             coin.setScale(0.03);
@@ -73,25 +85,52 @@ export class Game extends Scene {
             this.minions.add(minion);
         });
 
-        // HUD de vida
+        const cameraWidth = this.cameras.main.width;
+        const topY = 5;
+        const hudWidth = 200;
+
+        // Canto superior direito
+        const baseX = cameraWidth - hudWidth;
+
+        // Fundo da HUD
+        const hudBg = this.add.graphics();
+        hudBg.fillStyle(0x000000, 0.5);
+        hudBg.fillRoundedRect(baseX, topY, hudWidth, 32, 8);
+        hudBg.setScrollFactor(0);
+
+        // Corações
         for (let i = 0; i < this.player.maxHealth; i++) {
-            const heart = this.add.image(16 + i * 32, 16, 'heart_full')
+            const heartX = baseX + 16 + i * 32;
+            const heart = this.add.image(heartX, topY + 16, 'heart_full')
                 .setScrollFactor(0)
                 .setScale(0.05);
             this.hearts.push(heart);
         }
 
-        // HUD de moedas
-        this.add.image(160, 16, 'coin_icon').setScrollFactor(0).setScale(0.05);
-        this.coinText = this.add.text(180, 8, '0', {
-            fontSize: '16px', fill: '#fff', fontFamily: 'monospace'
+        // Ícone da moeda e texto
+        const coinIconX = baseX + hudWidth - 70;
+        this.add.image(coinIconX, topY + 16, 'coin_icon')
+            .setScrollFactor(0)
+            .setScale(0.05);
+
+        this.coinText = this.add.text(coinIconX + 20, topY + 8, '0', {
+            fontSize: '16px',
+            fill: '#fff',
+            fontFamily: 'monospace'
         }).setScrollFactor(0);
+
+
+
 
         // Colisões
         parede.setCollisionByExclusion([-1]);
         this.physics.add.collider(this.player, parede);
         this.physics.add.collider(this.minions, parede);
         this.physics.add.collider(this.minions, this.player);
+
+        objetos.setCollisionByExclusion([-1]); 
+        this.physics.add.collider(this.player, objetos);
+        this.physics.add.collider(this.minions, objetos);
 
         // Teclado
         this.cursors = this.input.keyboard.createCursorKeys();
