@@ -28,6 +28,7 @@ export class Game extends Scene {
         map.createLayer('portao', tiledset, 0, 0);
         map.createLayer('objetos', tiledset, 0, 0);
         map.createLayer('agua', tiledset, 0, 0);
+        map.createLayer('detalhes', tiledset, 0, 0);
 
         // Criando o player
         this.player = createPlayer(this);
