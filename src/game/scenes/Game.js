@@ -31,7 +31,7 @@ export class Game extends Scene {
         map.createLayer('cachoeira', tiledset, 0, 0);
         map.createLayer('detalhes / agua', tiledset, 0, 0);
         map.createLayer('agua', tiledset, 0, 0);
-
+        
         // Criando o player
         this.player = createPlayer(this);
         this.player.health = 3;
@@ -47,11 +47,11 @@ export class Game extends Scene {
 
         //boss
     
-this.boss = new Boss(this, 890, 680, 'boss', this.player);
-this.physics.add.collider(this.boss, parede);
-this.physics.add.collider(this.boss, this.player, () => {
-  // lógica de dano ou efeito
-});
+        this.boss = new Boss(this, 890, 680, 'boss', this.player);
+        this.physics.add.collider(this.boss, parede);
+        this.physics.add.collider(this.boss, this.player, () => {
+        // lógica de dano ou efeito
+        });
 
 
 
@@ -161,6 +161,13 @@ this.physics.add.collider(this.boss, this.player, () => {
 
     collectHeart(player, heart) {
         heart.disableBody(true, true);
+
+        // Remove o coração do array para não tentar atualizar depois
+        const index = this.hearts.indexOf(heart);
+        if (index > -1) {
+            this.hearts.splice(index, 1);
+        }
+
         if (this.player.health < this.player.maxHealth) {
             this.player.health++;
             this.updateHearts();
@@ -170,7 +177,8 @@ this.physics.add.collider(this.boss, this.player, () => {
     updateHearts() {
         for (let i = 0; i < this.hearts.length; i++) {
             const heart = this.hearts[i];
-            if (heart && heart.setTexture) {
+            // Verifica se o heart existe e está ativo na cena
+            if (heart && heart.setTexture && heart.scene) {
                 const texture = i < this.player.health ? 'heart_full' : 'heart_empty';
                 heart.setTexture(texture);
             }
@@ -188,10 +196,13 @@ this.physics.add.collider(this.boss, this.player, () => {
             const dy = minion.y - this.player.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-            if (distance <= range && minion.active) {
+            if (distance <= range) {
                 minion.health--;
                 if (minion.health <= 0) {
-                    minion.disableBody(true, true);
+                    minion.die();
+                } else {
+                    // opcional: tocar animação de "hit"
+                    minion.play('minion_hit', true);
                 }
             }
         });

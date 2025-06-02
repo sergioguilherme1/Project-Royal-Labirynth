@@ -7,6 +7,7 @@ export const createPlayer = (scene) => {
   player.setSize(11, 10);
   player.setOffset(18, 22);
   player.lastDirection = 'down';
+  player.setDepth(10);
 
   // Vida do jogador
   player.maxHealth = 3;

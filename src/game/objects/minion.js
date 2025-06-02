@@ -14,7 +14,9 @@ export default class Minion extends Phaser.Physics.Arcade.Sprite {
     this.setCollideWorldBounds(true);
     this.body.setImmovable(false);
 
-    //this.health = 2;
+    this.health = 2;
+    this.alive = true;
+
     this.patrolSpeed = 30;  
     this.attackingSpeed = 50;
     this.speed = this.attackingSpeed;
@@ -26,47 +28,62 @@ export default class Minion extends Phaser.Physics.Arcade.Sprite {
     this.currentPatrolIndex = 1;
     this.isAttacking = false;
     this.play('minion_walk_down'); // animação inicial
-  }
+  
     // Ataque
-    // this.attackCooldown = 0;
-    // this.attackRange = 40;
-    // this.attackRate = 1000;
-
+    this.attackCooldown = 0;
+    this.attackRange = 30;
+    this.attackRate = 1500;
+  }
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
 
-    if (!this.active || !this.target?.active) return;
+    if (!this.active || !this.target?.active || !this.alive) return;
 
     // Cálculo da distância entre o minion e o jogador
     const dx = this.target.x - this.x; 
     const dy = this.target.y - this.y; 
     const distance = Math.sqrt(dx * dx + dy * dy);
-    const detectionRange = 80;
+    const detectionRange = 60;
 
     //Parar patrulha e ir em direçaõ ao jogador
-    if (distance <= detectionRange && !this.isAttacking) {
+    if (distance <= detectionRange) {
       this.isAttacking = true;
     }
-    if(this.isAttacking){
-      this.setVelocity(0);
-      this.speed = this.attackingSpeed;
 
-      const angle = Math.atan2(dy, dx); 
-      this.setVelocity(Math.cos(angle) * this.speed, Math.sin(angle) * this.speed);
+    if (this.isAttacking) {
+      if (distance <= this.attackRange) {
+        this.setVelocity(0);
 
-      // animação de perseguição 
-      if (Math.abs(dx) > Math.abs(dy)) {
-        if (dx > 0) {
-          this.play('minion_walk_right', true); 
-        } else {
-          this.play('minion_walk_left', true); 
+        if (time > this.attackCooldown) {
+          this.attackCooldown = time + this.attackRate;
+
+          // Toca animação de ataque na direção correta
+          const direction = this.getDirection(dx, dy);
+          this.play(`minion_attack_${direction}`, true);
+
+          // Aplica dano ao jogador (exemplo)
+          if (this.target.health && this.target.health > 0) {
+            this.target.health--;
+            this.scene.updateHearts();
+
+            if (this.target.health <= 0) {
+              this.target.setVelocity(0);
+              this.target.play('player_die');
+              this.target.once('animationcomplete', () => {
+              this.scene.handleGameOver();
+              });
+            }
+          }
         }
       } else {
-        if (dy > 0) {
-          this.play('minion_walk_down', true); 
-        } else {
-          this.play('minion_walk_up', true); 
-        }
+          // Persegue o jogador andando normalmente
+        this.speed = this.attackingSpeed;
+        const angle = Math.atan2(dy, dx);
+        this.setVelocity(Math.cos(angle) * this.speed, Math.sin(angle) * this.speed);
+
+        // Animação de caminhada conforme direção
+        const direction = this.getDirection(dx, dy);
+        this.play(`minion_walk_${direction}`, true);
       }
     } else {
       // Patrulha do minion
@@ -104,7 +121,39 @@ export default class Minion extends Phaser.Physics.Arcade.Sprite {
         }
       }
     }
-  }  
+  }
+  die() {
+    this.alive = false;
+    this.setVelocity(0);
+    this.play(`minion_die_${this.getFacingDirection()}`, false);
+    this.once('animationcomplete', () => {
+      const anim = this.anims.currentAnim;
+      if (anim) {
+        const lastFrame = anim.frames[anim.frames.length - 1];
+        this.setFrame(lastFrame.frame.name || lastFrame.frame);
+        this.body.checkCollision.none = true;
+        this.setDepth(5);
+      }
+    });
+  }
+
+  getDirection(dx, dy) {
+    if (Math.abs(dx) > Math.abs(dy)) {
+      return dx > 0 ? 'right' : 'left';
+    } else {
+      return dy > 0 ? 'down' : 'up';
+    }      
+  }
+  getFacingDirection() {
+    // Método para determinar a direção que o minion está olhando
+    // Retorna 'up', 'down', 'left', ou 'right' baseado na animação atual
+    const anim = this.anims.getName();
+    if (anim.includes('up')) return 'up';
+    if (anim.includes('down')) return 'down';
+    if (anim.includes('left')) return 'left';
+    if (anim.includes('right')) return 'right';
+    return 'down'; // padrão
+  }
 }
 
 export const loadMinionSprites = (scene) => {
