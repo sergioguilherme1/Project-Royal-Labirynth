@@ -27,7 +27,7 @@ export class Preloader extends Scene {
 
         // Áudios
         this.load.audio("click", "audio/click.mp3");
-        this.load.audio("menuMusic", "audio/menu-theme.mp3");
+        this.load.audio("menuMusic", "audio/menu-theme.mp3");  // Música original aqui
         this.load.audio("attack", "audio/attack.mp3");
 
         // UI e itens

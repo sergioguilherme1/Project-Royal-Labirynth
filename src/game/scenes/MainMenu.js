@@ -59,7 +59,7 @@ export class MainMenu extends Scene {
       fill: "#555",
     });
 
-    // Música de fundo
+    // Música de fundo original
     this.menuMusic = this.sound.add("menuMusic", { loop: true, volume: 0.5 });
     this.menuMusic.play();
 
@@ -71,6 +71,42 @@ export class MainMenu extends Scene {
     this.createHelpButton();
     this.createSettingsButton();
     this.createSettingsPanel();
+
+    // Botão Instagram no canto inferior esquerdo
+    this.createInstagramButton();
+  }
+
+  createInstagramButton() {
+    const xBase = 40;  // canto inferior esquerdo, margem da esquerda
+    const yBase = 720; // mesma altura dos outros botões
+
+    this.instagramButton = this.add.container(xBase, yBase);
+
+    const instagramButtonBg = this.add.rectangle(0, 0, 50, 50, 0x1e1e2f)
+      .setStrokeStyle(3, 0xffd700)
+      .setInteractive({ useHandCursor: true });
+    this.instagramButton.add(instagramButtonBg);
+
+    const instagramIcon = this.add.text(0, 0, "📷", {
+      fontSize: "28px",
+      color: "#FFD700",
+      fontFamily: "Arial Black",
+    }).setOrigin(0.5);
+    this.instagramButton.add(instagramIcon);
+
+    instagramButtonBg.on("pointerover", () => {
+      instagramButtonBg.setFillStyle(0x294d77);
+      instagramIcon.setColor("#ffffff");
+    });
+
+    instagramButtonBg.on("pointerout", () => {
+      instagramButtonBg.setFillStyle(0x1e1e2f);
+      instagramIcon.setColor("#FFD700");
+    });
+
+    instagramButtonBg.on("pointerdown", () => {
+      window.open("https://www.instagram.com/royallabyrinth?igsh=MW95OXBrd2dybXEzbA==", "_blank");
+    });
   }
 
   // Botão pause/play música
@@ -290,7 +326,7 @@ export class MainMenu extends Scene {
 
 Controles:
 - Movimentar: Setas ou WASD
-- Atacar: Barra de espaço
+- Atacar: Aperte F
 - Pausar música: Botão canto inferior direito
 
 Dicas:

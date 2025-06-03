@@ -9,30 +9,26 @@ export class Game extends Scene {
   coinCount = 0;
   coinText;
   attackCooldown = 0;
-  isPaused = false;
 
-  // Guarda referências do menu modal
-  optionsModalBackground = null;
-  optionsModalGroup = null;
+  pauseGameButton;
 
   constructor() {
     super('Game');
   }
 
   create() {
-    // === Seu código padrão para mapa, player, HUD, etc ===
     const map = this.make.tilemap({ key: 'map' });
-    const tiledset = map.addTilesetImage('assests', 'tiles');
-    map.createLayer('fundo', tiledset, 0, 0);
-    map.createLayer('chao', tiledset, 0, 0);
-    const parede = map.createLayer('parede', tiledset, 0, 0);
+    const tileset = map.addTilesetImage('assests', 'tiles');
+    map.createLayer('fundo', tileset, 0, 0);
+    map.createLayer('chao', tileset, 0, 0);
+    const parede = map.createLayer('parede', tileset, 0, 0);
     parede.setCollisionByProperty({ collides: true });
-    map.createLayer('detalhes', tiledset, 0, 0);
-    map.createLayer('itens', tiledset, 0, 0);
-    map.createLayer('pilar', tiledset, 0, 0);
-    map.createLayer('cachoeira', tiledset, 0, 0);
-    map.createLayer('detalhes / agua', tiledset, 0, 0);
-    map.createLayer('agua', tiledset, 0, 0);
+    map.createLayer('detalhes', tileset, 0, 0);
+    map.createLayer('itens', tileset, 0, 0);
+    map.createLayer('pilar', tileset, 0, 0);
+    map.createLayer('cachoeira', tileset, 0, 0);
+    map.createLayer('detalhes / agua', tileset, 0, 0);
+    map.createLayer('agua', tileset, 0, 0);
 
     this.player = createPlayer(this);
     this.player.health = 3;
@@ -78,28 +74,12 @@ export class Game extends Scene {
       fontSize: '16px', fill: '#fff', fontFamily: 'monospace'
     }).setScrollFactor(0);
 
-    // === BOTÃO HAMBURGUER ===
-    const btnX = this.cameras.main.width - 50;
-    const btnY = 20;
+    // Música principal do jogo
+    this.menuMusic = this.sound.add("menuMusic", { loop: true, volume: 0.5 });
+    this.menuMusic.play();
 
-    const btnBg = this.add.rectangle(btnX, btnY, 40, 32, 0x1e1e2f)
-      .setStrokeStyle(3, 0xffd700)
-      .setScrollFactor(0)
-      .setInteractive({ useHandCursor: true });
-
-    const btnText = this.add.text(btnX, btnY, '☰', {
-      fontSize: '28px',
-      color: '#FFD700',
-      fontFamily: 'Arial',
-      fontWeight: 'bold'
-    }).setOrigin(0.5).setScrollFactor(0);
-
-    btnBg.on('pointerover', () => btnBg.setFillStyle(0x294d77));
-    btnBg.on('pointerout', () => btnBg.setFillStyle(0x1e1e2f));
-    btnBg.on('pointerdown', () => this.openOptionsMenu());
-
-    btnText.setInteractive({ useHandCursor: true });
-    btnText.on('pointerdown', () => this.openOptionsMenu());
+    // Botão de menu menor, no canto superior direito, um pouco mais para cima
+    this.createPauseGameButton();
 
     parede.setCollisionByExclusion([-1]);
     this.physics.add.collider(this.player, parede);
@@ -127,97 +107,41 @@ export class Game extends Scene {
     this.isGameOver = false;
   }
 
-  openOptionsMenu() {
-    if (this.optionsModalGroup) return;
+  createPauseGameButton() {
+    const xBase = this.cameras.main.width - 40;
+    const yBase = 24; // subido para alinhar melhor
 
-    this.isPaused = true;
-    this.scene.pause();
+    this.pauseGameButton = this.add.container(xBase, yBase);
 
-    const cam = this.cameras.main;
-    const width = cam.width;
-    const height = cam.height;
+    const pauseBtnBg = this.add.rectangle(0, 0, 40, 40, 0x1e1e2f) // tamanho menor
+      .setStrokeStyle(3, 0xffd700)
+      .setInteractive({ useHandCursor: true });
+    this.pauseGameButton.add(pauseBtnBg);
 
-    // Fundo modal bloqueador com depth alto
-    this.optionsModalBackground = this.add.rectangle(0, 0, width, height, 0x000000, 0.7)
-     .setOrigin(0, 0)
-     .setDepth(1000)
-     .setInteractive()
-     .on('pointerdown', e => e.stopPropagation());
+    const pauseText = this.add.text(0, 0, "≡", {
+      fontSize: "24px", // tamanho da fonte menor
+      color: "#FFD700",
+      fontFamily: "Arial Black"
+    }).setOrigin(0.5);
+    this.pauseGameButton.add(pauseText);
 
-    // Grupo para modal
-    this.optionsModalGroup = this.add.group([], {
-      key: 'modal',
-      active: true,
-      visible: true,
-      maxSize: -1
+    pauseBtnBg.on("pointerover", () => {
+      pauseBtnBg.setFillStyle(0x294d77);
+      pauseText.setColor("#ffffff");
     });
 
-    this.optionsModalGroup.add(this.optionsModalBackground);
-
-    // Fundo do painel
-    const panelWidth = 320;
-    const panelHeight = 160;
-    const panelX = width / 2;
-    const panelY = height / 2;
-
-    const graphics = this.add.graphics()
-      .fillStyle(0x1e1e2f, 0.95)
-      .lineStyle(3, 0xffd700)
-      .fillRoundedRect(panelX - panelWidth / 2, panelY - panelHeight / 2, panelWidth, panelHeight, 16)
-      .strokeRoundedRect(panelX - panelWidth / 2, panelY - panelHeight / 2, panelWidth, panelHeight, 16)
-      .setDepth(1001);
-
-    this.optionsModalGroup.add(graphics);
-
-    // Botão "Voltar ao Menu"
-    const btnReturn = this.add.text(panelX, panelY - 30, 'Voltar ao Menu', {
-      fontSize: '24px',
-      fill: '#FFD700',
-      fontFamily: 'monospace'
-    }).setOrigin(0.5).setDepth(1002).setInteractive({ useHandCursor: true });
-
-    btnReturn.on('pointerdown', e => {
-      e.stopPropagation();
-      this.sound.play('click');
-      this.closeOptionsMenu();
-      this.scene.start('MainMenu');
+    pauseBtnBg.on("pointerout", () => {
+      pauseBtnBg.setFillStyle(0x1e1e2f);
+      pauseText.setColor("#FFD700");
     });
 
-    this.optionsModalGroup.add(btnReturn);
-
-    // Botão "Continuar"
-    const btnContinue = this.add.text(panelX, panelY + 30, 'Continuar', {
-      fontSize: '24px',
-      fill: '#FFD700',
-      fontFamily: 'monospace'
-    }).setOrigin(0.5).setDepth(1002).setInteractive({ useHandCursor: true });
-
-    btnContinue.on('pointerdown', e => {
-      e.stopPropagation();
-      this.sound.play('click');
-      this.closeOptionsMenu();
+    pauseBtnBg.on("pointerdown", () => {
+      this.scene.launch('PauseMenu');
+      this.scene.pause();
     });
-
-    this.optionsModalGroup.add(btnContinue);
-  }
-
-  closeOptionsMenu() {
-    if (!this.optionsModalGroup) return;
-
-    this.optionsModalGroup.clear(true, true);
-    if (this.optionsModalBackground) {
-      this.optionsModalBackground.destroy();
-      this.optionsModalBackground = null;
-    }
-
-    this.optionsModalGroup = null;
-    this.isPaused = false;
-    this.scene.resume();
   }
 
   update() {
-    if (this.isPaused) return;
-
     updatePlayer(this.player, this.cursors, this.keys);
 
     if (Phaser.Input.Keyboard.JustDown(this.keys.F)) {
