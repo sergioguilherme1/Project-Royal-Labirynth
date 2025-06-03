@@ -22,6 +22,10 @@ export class Game extends Scene {
     constructor() {
         super('Game');
     }
+     preload() {
+    this.load.audio('dragonAttack', 'assets/audio/dragon_attack.wav');
+    }
+
 
     create() {
         // Criando o mapa
@@ -218,6 +222,9 @@ export class Game extends Scene {
 
             if (distance <= range) {
                 minion.health--;
+
+                 this.sound.play('orcHit');
+                 
                 if (minion.health <= 0) {
                     minion.die();
                 } else {

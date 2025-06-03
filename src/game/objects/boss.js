@@ -36,6 +36,7 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     this.attackRate = 2500;
 
     this.play('boss_walk_down');
+    
   }
 
   preUpdate(time, delta) {
@@ -59,6 +60,9 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
           this.attackCooldown = time + this.attackRate;
           const direction = this.getDirection(dx, dy);
           this.play(`boss_attack_${direction}`, true);
+
+          this.scene.sound.play('dragonAttack');
+
 
           if (this.target.health && this.target.health > 0) {
             this.target.health--;
