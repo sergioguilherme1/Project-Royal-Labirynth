@@ -114,18 +114,6 @@ export class Game extends Scene {
         });
         this.physics.add.overlap(this.player, this.heartsGroup, this.collectHeart, null, this);
 
-        // Lacaios
-        this.minions = this.physics.add.group();
-        [
-            { x: 300, y: 400 },
-            { x: 500, y: 250 },
-            { x: 700, y: 350 },
-            { x: 800, y: 450 } // mantida a versão com mais lacaios
-        ].forEach(pos => {
-            const minion = new Minion(this, pos.x, pos.y, 'minion', this.player);
-            this.minions.add(minion);
-        });
-
         const cameraWidth = this.cameras.main.width;
         const topY = 5;
         const hudWidth = 200;
