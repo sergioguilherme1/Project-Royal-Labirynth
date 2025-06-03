@@ -59,6 +59,12 @@ export class MainMenu extends Scene {
       fill: "#555",
     });
 
+    // Texto do email no canto superior direito
+    this.add.text(this.cameras.main.width - 10, 10, "contato@royallabyrinth.com.br", {
+      font: "14px Arial",
+      fill: "#555",
+    }).setOrigin(1, 0);  // alinhado à direita e topo
+
     // Música de fundo original
     this.menuMusic = this.sound.add("menuMusic", { loop: true, volume: 0.5 });
     this.menuMusic.play();
