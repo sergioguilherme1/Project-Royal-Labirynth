@@ -1,6 +1,11 @@
 import { Scene } from 'phaser';
 import { loadSprites } from '../objects/player';
 import { loadMinionSprites } from '../objects/minion';
+import { loadBossSprites } from '../objects/boss';
+import { loadBossAtackSprites } from '../objects/boss';
+import { loadBossMortSprites } from '../objects/boss';
+
+
 
 export class Preloader extends Scene {
     constructor() {
@@ -30,19 +35,27 @@ export class Preloader extends Scene {
         // Áudios
         this.load.audio("click", "audio/click.mp3");
         this.load.audio("menuMusic", "audio/menu-theme.mp3");
-        this.load.audio("attack", "audio/attack.mp3");
+        this.load.audio("attack", "audio/attack.mp3"); // ataque do player
+        this.load.audio('dragonAttack', 'audio/dragon_attack.wav'); // Ataque do boss
+        this.load.audio('orcHit', 'audio/danolacaio.wav'); // Lacaios sofrendo dano
+
+
 
         // UI e itens
         this.load.image('heart_full', 'ui/heart_full.png');
         this.load.image('heart_empty', 'ui/heart_empty.png');
         this.load.image('coin', 'items/coin.png');
-        this.load.image('coin_icon', 'ui/coin.png');
-        this.load.image('heart_item', 'items/heart_full.png');
+        this.load.image('coin_icon', 'ui/coin.png'); // moedas do mapa
+        this.load.image('heart_item', 'items/heart_full.png'); // Corações do mapa
 
         // Lacaios (minions)
         loadMinionSprites(this);
         // Jogador
         loadSprites(this);
+        // Boss
+        loadBossSprites(this);
+       // Boss Atack
+       loadBossAtackSprites(this);
     }
 
     create() {

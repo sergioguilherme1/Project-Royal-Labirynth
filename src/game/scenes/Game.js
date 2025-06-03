@@ -1,52 +1,81 @@
-// ... (importações)
 import { Scene } from 'phaser';
 import { createPlayer } from '../objects/player';
 import { updatePlayer } from '../objects/player';
 import Minion, { createMinionAnimations } from '../objects/minion';
+import Boss, { loadBossSprites, loadBossAtackSprites, loadBossMortSprites, createBossAnimations } from '../objects/boss';
 
 const MAP_CONFIG = {
-        map: {
-            spawn: { x: 65, y: 60},
-            coins: [
-                { x: 45, y: 502 },
-                { x: 184, y: 715 },
-                { x: 440, y: 727 },
-                { x: 805, y: 487 },
-                { x: 184, y: 255 },
-                { x: 451, y: 593 },
-                { x: 473, y: 214 },
-                { x: 855, y: 721 },
-                { x: 978, y: 372 },
-                { x: 767, y: 132 }
-                // ...
-            ],
-            hearts: [
-                 { x: 40, y: 650 },
-                 { x: 424, y: 87 },
-                 { x: 758, y: 647 },
-                 { x: 928, y: 115 }
-               
-            ],
-            nextMap: 'map2'
-        },
-        map2: {
-            spawn: { x: 936, y: 89 },
-            coins: [
-                { x: 100, y: 200 },
-                { x: 300, y: 400 }
-            ],
-            hearts: [
-                { x: 150, y: 250 }
-            ],
-            nextMap: 'map3'
-        },
-        map3: {
-            spawn: { x: 512, y: 537 },
-            coins: [],
-            hearts: [],
-            nextMap: null // ou 'fim' se não tiver mais
-        }
-    };
+    map: {
+        spawn: { x: 65, y: 60},
+        coins: [
+            { x: 45, y: 502 },
+            { x: 184, y: 715 },
+            { x: 440, y: 727 },
+            { x: 805, y: 487 },
+            { x: 184, y: 255 },
+            { x: 451, y: 593 },
+            { x: 473, y: 214 },
+            { x: 855, y: 721 },
+            { x: 978, y: 372 },
+            { x: 767, y: 132 }
+        ],
+        hearts: [
+                { x: 40, y: 650 },
+                { x: 424, y: 87 },
+                { x: 758, y: 647 },
+                { x: 928, y: 115 }
+        ],
+        nextMap: 'map2'
+    },
+    map2: {
+        spawn: { x: 936, y: 89 },
+        coins: [
+            { x: 100, y: 200 },
+            { x: 300, y: 400 }
+        ],
+        hearts: [
+            { x: 150, y: 250 }
+        ],
+        nextMap: 'map3'
+    },
+    map3: {
+        spawn: { x: 512, y: 537 },
+        coins: [],
+        hearts: [],
+        nextMap: null 
+    }
+};
+
+const MINIONS_CONFIG = {
+  map: [
+    [ { x: 41, y: 504 }, { x: 200, y: 504 } ], 
+    [ { x: 293, y: 486 }, { x: 536, y: 486 } ],
+    [ { x: 328, y: 58 }, { x: 328, y: 228 } ],
+    [ { x: 647, y: 104 }, { x: 520, y: 104 }, { x: 520, y: 215 }, { x: 520, y: 104 } ], 
+    [ { x: 968, y: 375 }, { x: 743, y: 375 } ], 
+    [ { x: 679, y: 728 }, { x: 936, y: 728 } ], 
+    
+  ],
+  map2: [
+    [ { x: 104, y: 70 }, { x: 104, y: 340 } ], 
+    [ { x: 104, y:350 }, { x: 104, y: 520 } ], 
+    [ { x: 197, y: 521 }, { x: 650, y: 521 } ],
+    [ { x: 265, y: 359 }, { x: 328, y: 406 }, { x: 388, y: 360 }, { x: 327, y: 319 } ], 
+    [ { x: 938, y: 282 }, { x: 680, y: 282 } ],
+    [ { x: 951, y: 438 }, { x: 951, y: 678 } ],
+    [ { x: 172, y: 680 }, { x: 543, y: 680 } ],
+  ],
+  map3: [
+    [ { x: 246, y: 179 }, { x: 76, y: 179 } ],
+    [ { x: 237, y: 544 }, { x: 237, y: 299 } ], 
+    [ { x: 66, y: 688 }, { x: 374, y: 687 } ], 
+    [ { x: 956, y: 686 }, { x: 642, y: 686 } ], 
+    [ { x: 783, y: 545 }, { x: 783, y: 257 } ], 
+    [ { x: 958, y: 174 }, { x: 783, y: 174 } ], 
+  ]
+};
+
+const LAST_MAP_WITH_BOSS = 'map3';
 
 export class Game extends Scene {
     player;
@@ -58,10 +87,11 @@ export class Game extends Scene {
     constructor() {
         super('Game');
     }
-    
+         preload() {
+    this.load.audio('dragonAttack', 'assets/audio/dragon_attack.wav');
+    }
 
-
-        create(data) {
+    create(data) {
         const mapKey = data?.mapKey || 'map';
         const config = MAP_CONFIG[mapKey] || {};
 
@@ -79,12 +109,44 @@ export class Game extends Scene {
         const objetos = map.createLayer('objetos', tiledset, 0, 0);
         objetos.setCollisionByProperty({ collides: true });
 
-    
-
         // Player
         const spawn = config.spawn || { x: 0, y: 0 };
         this.player = createPlayer(this, spawn.x, spawn.y);
         this.player.maxHealth = 3;
+
+        //Boss
+        if(mapKey === LAST_MAP_WITH_BOSS){
+            createBossAnimations(this);
+            const bossPatrol = [
+            { x: 511, y: 295 },
+            { x: 424, y: 380 },
+            { x: 511, y: 460 },
+            { x: 603, y: 380 },
+            ];
+            this.boss = new Boss(this, bossPatrol[0].x, bossPatrol[0].y, 'boss', this.player);
+            this.boss.patrolPoints = bossPatrol;
+            this.boss.currentPatrolIndex = 1;
+
+            this.physics.add.collider(this.boss, parede);
+            this.physics.add.collider(this.boss, this.player, () => {
+            // lógica de dano ou efeito
+            });
+        }
+
+        //Criando lacaios
+        createMinionAnimations(this);
+        this.minions = this.physics.add.group();
+        const patrolZones = MINIONS_CONFIG[mapKey] || [];
+
+        patrolZones.forEach(zone => {
+        const startPos = zone[0];
+        const minion = new Minion(this, startPos.x, startPos.y, 'minion', this.player);
+        minion.patrolPoints = zone;
+        minion.currentPatrolIndex = 1;
+        this.minions.add(minion);
+        });
+
+        this.restartKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
         this.player.health = data?.health ?? 3;
 
         // Layer de fim de fase
@@ -141,7 +203,6 @@ export class Game extends Scene {
         this.add.image(coinIconX, topY + 16, 'coin_icon')
             .setScrollFactor(0)
             .setScale(0.05);
-
         this.coinText = this.add.text(coinIconX + 20, topY + 8, '', {
         fontSize: '16px',
         fill: '#fff',
@@ -149,7 +210,6 @@ export class Game extends Scene {
         }).setScrollFactor(0);
 
         this.coinText.setText(this.coinCount.toString());
-
 
         // Colisões
         parede.setCollisionByExclusion([-1]);
@@ -196,10 +256,6 @@ export class Game extends Scene {
         if (Phaser.Input.Keyboard.JustDown(this.keys.F)) {
             this.attackEnemy();
         }
-
-        Phaser.Actions.Call(this.minions.getChildren(), (minion) => {
-            if (minion.preUpdate) minion.preUpdate();
-        });
     }
 
     handleGameOver() {
@@ -219,6 +275,13 @@ export class Game extends Scene {
 
     collectHeart(player, heart) {
         heart.disableBody(true, true);
+
+        // Remove o coração do array para não tentar atualizar depois
+        const index = this.hearts.indexOf(heart);
+        if (index > -1) {
+            this.hearts.splice(index, 1);
+        }
+
         if (this.player.health < this.player.maxHealth) {
             this.player.health++;
             this.updateHearts();
@@ -228,7 +291,8 @@ export class Game extends Scene {
     updateHearts() {
         for (let i = 0; i < this.hearts.length; i++) {
             const heart = this.hearts[i];
-            if (heart && heart.setTexture) {
+            // Verifica se o heart existe e está ativo na cena
+            if (heart && heart.setTexture && heart.scene) {
                 const texture = i < this.player.health ? 'heart_full' : 'heart_empty';
                 heart.setTexture(texture);
             }
@@ -246,10 +310,15 @@ export class Game extends Scene {
             const dy = minion.y - this.player.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-            if (distance <= range && minion.active) {
+            if (distance <= range) {
                 minion.health--;
+
+                 this.sound.play('orcHit');
+                 
                 if (minion.health <= 0) {
-                    minion.disableBody(true, true);
+                    minion.die();
+                } else {
+                    minion.play('minion_hit', true);
                 }
             }
         });

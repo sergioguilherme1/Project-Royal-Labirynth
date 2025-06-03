@@ -4,9 +4,10 @@ import Phaser from 'phaser';
 export const createPlayer = (scene, x, y) => {
   const player = scene.physics.add.sprite(x, y, 'player');
   player.setScale(1.2);
-  player.setSize(18, 10);
-  player.setOffset(14, 24);
+  player.setSize(11, 10);
+  player.setOffset(18, 22);
   player.lastDirection = 'down';
+  player.setDepth(10);
 
   // Vida do jogador
   player.maxHealth = 3;
@@ -28,22 +29,61 @@ export const loadSprites = (scene) => {
 // Criação de animações
 export const createAnimations = (scene) => {
   // Andar
-  scene.anims.create({ key: 'walk_down', frames: scene.anims.generateFrameNumbers('player', { start: 0, end: 2 }), frameRate: 8, repeat: -1 });
-  scene.anims.create({ key: 'walk_left', frames: scene.anims.generateFrameNumbers('player', { start: 12, end: 14 }), frameRate: 8, repeat: -1 });
-  scene.anims.create({ key: 'walk_right', frames: scene.anims.generateFrameNumbers('player', { start: 24, end: 26 }), frameRate: 8, repeat: -1 });
-  scene.anims.create({ key: 'walk_up', frames: scene.anims.generateFrameNumbers('player', { start: 36, end: 38 }), frameRate: 8, repeat: -1 });
+  scene.anims.create({ 
+    key: 'walk_down', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 0, end: 2 }), 
+    frameRate: 7, 
+    repeat: -1 
+  });
+  scene.anims.create({ 
+    key: 'walk_left', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 12, end: 14 }), 
+    frameRate: 7, 
+    repeat: -1 
+  });
+  scene.anims.create({ 
+    key: 'walk_right', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 24, end: 26 }), 
+    frameRate: 7, 
+    repeat: -1 
+  });
+  scene.anims.create({ 
+    key: 'walk_up', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 36, end: 38 }), 
+    frameRate: 7, 
+    repeat: -1 });
 
   // Ataques
-  scene.anims.create({ key: 'attack_down', frames: scene.anims.generateFrameNumbers('player', { start: 53, end: 56 }), frameRate: 8, repeat: 0 });
-  scene.anims.create({ key: 'attack_left', frames: scene.anims.generateFrameNumbers('player', { start: 65, end: 68 }), frameRate: 8, repeat: 0 });
-  scene.anims.create({ key: 'attack_right', frames: scene.anims.generateFrameNumbers('player', { start: 77, end: 80 }), frameRate: 8, repeat: 0 });
-  scene.anims.create({ key: 'attack_up', frames: scene.anims.generateFrameNumbers('player', { start: 89, end: 92 }), frameRate: 8, repeat: 0 });
+  scene.anims.create({ 
+    key: 'attack_down', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 53, end: 56 }), 
+    frameRate: 8, 
+    repeat: 0 
+  });
+  scene.anims.create({ 
+    key: 'attack_left', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 65, end: 68 }), 
+    frameRate: 8, 
+    repeat: 0 
+  });
+  scene.anims.create({ 
+    key: 'attack_right', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 77, end: 80 }), 
+    frameRate: 8, 
+    repeat: 0 
+  });
+  scene.anims.create({ 
+    key: 'attack_up', 
+    frames: scene.anims.generateFrameNumbers('player', { start: 89, end: 92 }), 
+    frameRate: 8, 
+    repeat: 0 
+  });
 
 };
 
 // Atualiza o jogador conforme teclas
 export const updatePlayer = (player, cursors, keys) => {
-  const speed = 100;
+  const speed = 80;
 
   if (player.anims.currentAnim?.key?.startsWith('attack') && player.anims.isPlaying) return;
 
