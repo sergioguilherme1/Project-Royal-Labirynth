@@ -53,8 +53,8 @@ export class MainMenu extends Scene {
     });
     buttonText.on("pointerdown", () => buttonBg.emit("pointerdown"));
 
-    // Texto de direitos autorais
-    this.add.text(10, 740, "Royal Labyrinth © - 2025", {
+    // Texto de direitos autorais no canto superior esquerdo
+    this.add.text(10, 10, "Royal Labyrinth © - 2025", {
       font: "14px Arial",
       fill: "#555",
     });
@@ -139,7 +139,7 @@ export class MainMenu extends Scene {
     });
   }
 
-  // Botão pause/play música
+  // Botão pause/play música com ícones estilo mute do PauseMenu
   createMusicToggleButton() {
     const xBase = 840;
     const yBase = 720;
@@ -151,69 +151,52 @@ export class MainMenu extends Scene {
       .setInteractive({ useHandCursor: true });
     this.musicButton.add(musicButtonBg);
 
-    this.pauseIcon = this.add.graphics();
-    this.pauseIcon.fillStyle(0xFFD700, 1);
-    this.pauseIcon.fillRect(-12, -15, 8, 30);
-    this.pauseIcon.fillRect(5, -15, 8, 30);
-    this.musicButton.add(this.pauseIcon);
+    // Ícone som ligado (alto-falante)
+    this.soundOnIcon = this.add.text(0, 0, "🔉", {
+      fontSize: "36px",
+      color: "#FFD700",
+      fontFamily: "Arial Black",
+      stroke: "#000000",
+      strokeThickness: 4,
+      shadow: { offsetX: 3, offsetY: 3, color: "#000", blur: 6, fill: true },
+    }).setOrigin(0.5);
+    this.musicButton.add(this.soundOnIcon);
 
-    this.playIcon = this.add.graphics();
-    this.playIcon.fillStyle(0xFFD700, 1);
-    this.playIcon.beginPath();
-    this.playIcon.moveTo(-10, -15);
-    this.playIcon.lineTo(15, 0);
-    this.playIcon.lineTo(-10, 15);
-    this.playIcon.closePath();
-    this.playIcon.fillPath();
-    this.musicButton.add(this.playIcon);
+    // Ícone som mudo
+    this.soundOffIcon = this.add.text(0, 0, "🔇", {
+      fontSize: "36px",
+      color: "#FFD700",
+      fontFamily: "Arial Black",
+      stroke: "#000000",
+      strokeThickness: 4,
+      shadow: { offsetX: 3, offsetY: 3, color: "#000", blur: 6, fill: true },
+    }).setOrigin(0.5);
+    this.musicButton.add(this.soundOffIcon);
 
-    this.pauseIcon.setVisible(true);
-    this.playIcon.setVisible(false);
+    this.soundOffIcon.setVisible(false);
 
     musicButtonBg.on("pointerdown", () => {
       if (this.menuMusic.isPlaying) {
         this.menuMusic.pause();
-        this.pauseIcon.setVisible(false);
-        this.playIcon.setVisible(true);
+        this.soundOnIcon.setVisible(false);
+        this.soundOffIcon.setVisible(true);
       } else if (this.menuMusic.isPaused) {
         this.menuMusic.resume();
-        this.pauseIcon.setVisible(true);
-        this.playIcon.setVisible(false);
+        this.soundOnIcon.setVisible(true);
+        this.soundOffIcon.setVisible(false);
       }
     });
 
     musicButtonBg.on("pointerover", () => {
       musicButtonBg.setFillStyle(0x294d77);
-      this.pauseIcon.clear();
-      this.pauseIcon.fillStyle(0xffffff, 1);
-      this.pauseIcon.fillRect(-12, -15, 8, 30);
-      this.pauseIcon.fillRect(5, -15, 8, 30);
-
-      this.playIcon.clear();
-      this.playIcon.fillStyle(0xffffff, 1);
-      this.playIcon.beginPath();
-      this.playIcon.moveTo(-10, -15);
-      this.playIcon.lineTo(15, 0);
-      this.playIcon.lineTo(-10, 15);
-      this.playIcon.closePath();
-      this.playIcon.fillPath();
+      this.soundOnIcon.setColor("#ffffff");
+      this.soundOffIcon.setColor("#ffffff");
     });
 
     musicButtonBg.on("pointerout", () => {
       musicButtonBg.setFillStyle(0x1e1e2f);
-      this.pauseIcon.clear();
-      this.pauseIcon.fillStyle(0xFFD700, 1);
-      this.pauseIcon.fillRect(-12, -15, 8, 30);
-      this.pauseIcon.fillRect(5, -15, 8, 30);
-
-      this.playIcon.clear();
-      this.playIcon.fillStyle(0xFFD700, 1);
-      this.playIcon.beginPath();
-      this.playIcon.moveTo(-10, -15);
-      this.playIcon.lineTo(15, 0);
-      this.playIcon.lineTo(-10, 15);
-      this.playIcon.closePath();
-      this.playIcon.fillPath();
+      this.soundOnIcon.setColor("#FFD700");
+      this.soundOffIcon.setColor("#FFD700");
     });
   }
 
