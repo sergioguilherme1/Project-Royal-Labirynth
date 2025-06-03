@@ -24,6 +24,8 @@ export class Preloader extends Scene {
         this.load.image('background', 'backgrounds/dungeon-bg-1024x768.png');
         this.load.image('tiles', 'maps/assetsmap.png');
         this.load.tilemapTiledJSON('map', 'maps/map.json');
+        this.load.tilemapTiledJSON('map2', 'maps/map2.json');
+        this.load.tilemapTiledJSON('map3', 'maps/map3.json');
 
         // Áudios
         this.load.audio("click", "audio/click.mp3");
