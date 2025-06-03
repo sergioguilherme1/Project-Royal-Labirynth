@@ -2,13 +2,16 @@ import { Scene } from "phaser";
 
 export class PauseMenu extends Scene {
   constructor() {
-    super('PauseMenu');
+    super("PauseMenu");
   }
 
   create() {
     const { width, height } = this.cameras.main;
 
-    this.overlay = this.add.rectangle(0, 0, width, height, 0x000000, 0.7).setOrigin(0).setInteractive();
+    this.overlay = this.add
+      .rectangle(0, 0, width, height, 0x000000, 0.7)
+      .setOrigin(0)
+      .setInteractive();
 
     const panelWidth = 340;
     const panelHeight = 300;
@@ -18,96 +21,176 @@ export class PauseMenu extends Scene {
     const graphics = this.add.graphics();
     graphics.fillStyle(0x1e1e2f, 0.95);
     graphics.lineStyle(3, 0xffd700);
-    graphics.fillRoundedRect(panelX - panelWidth / 2, panelY - panelHeight / 2, panelWidth, panelHeight, 20);
-    graphics.strokeRoundedRect(panelX - panelWidth / 2, panelY - panelHeight / 2, panelWidth, panelHeight, 20);
+    graphics.fillRoundedRect(
+      panelX - panelWidth / 2,
+      panelY - panelHeight / 2,
+      panelWidth,
+      panelHeight,
+      20
+    );
+    graphics.strokeRoundedRect(
+      panelX - panelWidth / 2,
+      panelY - panelHeight / 2,
+      panelWidth,
+      panelHeight,
+      20
+    );
     graphics.setDepth(1);
 
-    this.continueBtn = this.add.text(panelX, panelY - 100, 'Continuar', {
-      fontSize: '28px',
-      fill: '#FFD700',
-      fontFamily: 'monospace',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 3,
-      shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 4, fill: true }
-    }).setOrigin(0.5).setDepth(2).setInteractive({ useHandCursor: true });
-    this.continueBtn.on('pointerdown', () => {
+    this.continueBtn = this.add
+      .text(panelX, panelY - 100, "Continuar", {
+        fontSize: "28px",
+        fill: "#FFD700",
+        fontFamily: "monospace",
+        fontStyle: "bold",
+        stroke: "#000000",
+        strokeThickness: 3,
+        shadow: { offsetX: 2, offsetY: 2, color: "#000", blur: 4, fill: true },
+      })
+      .setOrigin(0.5)
+      .setDepth(2)
+      .setInteractive({ useHandCursor: true });
+    this.continueBtn.on("pointerdown", () => {
       this.scene.stop();
-      this.scene.resume('Game');
+      this.scene.resume("Game");
     });
 
-    this.returnBtn = this.add.text(panelX, panelY - 50, 'Voltar ao Menu', {
-      fontSize: '28px',
-      fill: '#FFD700',
-      fontFamily: 'monospace',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 3,
-      shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 4, fill: true }
-    }).setOrigin(0.5).setDepth(2).setInteractive({ useHandCursor: true });
-    this.returnBtn.on('pointerdown', () => {
-      const gameScene = this.scene.get('Game');
+    this.returnBtn = this.add
+      .text(panelX, panelY - 50, "Voltar ao Menu", {
+        fontSize: "28px",
+        fill: "#FFD700",
+        fontFamily: "monospace",
+        fontStyle: "bold",
+        stroke: "#000000",
+        strokeThickness: 3,
+        shadow: { offsetX: 2, offsetY: 2, color: "#000", blur: 4, fill: true },
+      })
+      .setOrigin(0.5)
+      .setDepth(2)
+      .setInteractive({ useHandCursor: true });
+    this.returnBtn.on("pointerdown", () => {
+      const gameScene = this.scene.get("Game");
       if (gameScene.menuMusic && gameScene.menuMusic.isPlaying) {
         gameScene.menuMusic.stop();
       }
-      this.scene.stop('Game');
-      this.scene.start('MainMenu');
+      this.scene.stop("Game");
+      this.scene.start("MainMenu");
       this.scene.stop();
     });
 
-    this.volumeButton = this.add.text(panelX - 70, panelY + 40, 'Volume', {
-      fontSize: '28px',
-      fill: '#FFD700',
-      fontFamily: 'monospace',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 3,
-      shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 4, fill: true }
-    }).setOrigin(0.5).setDepth(2).setInteractive({ useHandCursor: true });
-    this.volumeButton.on('pointerdown', () => {
+    // Ícone de Volume (🔉) com texto "Volume" abaixo
+    const volumeX = panelX - 70;
+    const volumeY = panelY + 40;
+
+    this.volumeIcon = this.add
+      .text(volumeX, volumeY, "🔉", {
+        fontSize: "36px",
+        color: "#FFD700",
+        fontFamily: "Arial Black",
+        stroke: "#000000",
+        strokeThickness: 4,
+        shadow: { offsetX: 3, offsetY: 3, color: "#000", blur: 6, fill: true },
+      })
+      .setOrigin(0.5)
+      .setDepth(2)
+      .setInteractive({ useHandCursor: true });
+    this.volumeIcon.on("pointerdown", () => {
       this.toggleVolumePanel();
     });
 
-    this.muteButton = this.add.text(panelX + 70, panelY + 40, 'Mudo', {
-      fontSize: '28px',
-      fill: '#FFD700',
-      fontFamily: 'monospace',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 3,
-      shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 4, fill: true }
-    }).setOrigin(0.5).setDepth(2).setInteractive({ useHandCursor: true });
-    this.muteButton.on('pointerdown', () => {
-      const gameScene = this.scene.get('Game');
-      if (gameScene.menuMusic.mute) {
-        gameScene.menuMusic.setMute(false);
-        this.muteButton.setText('Mudo');
-      } else {
-        gameScene.menuMusic.setMute(true);
-        this.muteButton.setText('Som');
-      }
+    this.volumeLabel = this.add
+      .text(volumeX, volumeY + 40, "Volume", {
+        fontSize: "16px",
+        color: "#FFD700",
+        fontFamily: "Arial",
+        stroke: "#000000",
+        strokeThickness: 2,
+        shadow: { offsetX: 1, offsetY: 1, color: "#000", blur: 4, fill: true },
+      })
+      .setOrigin(0.5)
+      .setDepth(2);
+
+    // Ícones de Mudo (🔇) e Som (🔈) com texto "Mute" abaixo
+    const muteX = panelX + 70;
+    const muteY = panelY + 40;
+
+    this.soundOnIcon = this.add
+      .text(muteX, muteY, "🔈", {
+        fontSize: "36px",
+        color: "#FFD700",
+        fontFamily: "Arial Black",
+        stroke: "#000000",
+        strokeThickness: 4,
+        shadow: { offsetX: 3, offsetY: 3, color: "#000", blur: 6, fill: true },
+      })
+      .setOrigin(0.5)
+      .setDepth(2)
+      .setInteractive({ useHandCursor: true });
+
+    this.soundOffIcon = this.add
+      .text(muteX, muteY, "🔇", {
+        fontSize: "36px",
+        color: "#FFD700",
+        fontFamily: "Arial Black",
+        stroke: "#000000",
+        strokeThickness: 4,
+        shadow: { offsetX: 3, offsetY: 3, color: "#000", blur: 6, fill: true },
+      })
+      .setOrigin(0.5)
+      .setDepth(2)
+      .setInteractive({ useHandCursor: true });
+
+    this.soundOffIcon.setVisible(false);
+
+    this.muteLabel = this.add
+      .text(muteX, muteY + 40, "Mute", {
+        fontSize: "16px",
+        color: "#FFD700",
+        fontFamily: "Arial",
+        stroke: "#000000",
+        strokeThickness: 2,
+        shadow: { offsetX: 1, offsetY: 1, color: "#000", blur: 4, fill: true },
+      })
+      .setOrigin(0.5)
+      .setDepth(2);
+
+    this.soundOnIcon.on("pointerdown", () => {
+      const gameScene = this.scene.get("Game");
+      gameScene.menuMusic.setMute(true);
+      this.soundOnIcon.setVisible(false);
+      this.soundOffIcon.setVisible(true);
+    });
+
+    this.soundOffIcon.on("pointerdown", () => {
+      const gameScene = this.scene.get("Game");
+      gameScene.menuMusic.setMute(false);
+      this.soundOnIcon.setVisible(true);
+      this.soundOffIcon.setVisible(false);
     });
 
     this.createVolumePanel(panelX, panelY + 110);
   }
 
   createVolumePanel(x, y) {
-    this.volumePanelBg = this.add.rectangle(x - 70, y, 160, 50, 0x1e1e2f, 0.95)
+    this.volumePanelBg = this.add
+      .rectangle(x - 70, y, 160, 50, 0x1e1e2f, 0.95)
       .setStrokeStyle(3, 0xffd700)
       .setOrigin(0, 0.5)
       .setDepth(100)
       .setVisible(false)
       .setInteractive();
 
-    this.volumeTrack = this.add.rectangle(x - 55, y, 120, 10, 0x555555)
+    this.volumeTrack = this.add
+      .rectangle(x - 55, y, 120, 10, 0x555555)
       .setOrigin(0, 0.5)
       .setDepth(101)
       .setVisible(false);
 
-    const gameScene = this.scene.get('Game');
+    const gameScene = this.scene.get("Game");
     const initialVolume = gameScene.menuMusic ? gameScene.menuMusic.volume : 0.5;
 
-    this.volumeThumb = this.add.rectangle(x - 55 + (120 * initialVolume), y, 16, 30, 0xffd700)
+    this.volumeThumb = this.add
+      .rectangle(x - 55 + 120 * initialVolume, y, 16, 30, 0xffd700)
       .setOrigin(0.5)
       .setDepth(102)
       .setVisible(false)
@@ -115,7 +198,7 @@ export class PauseMenu extends Scene {
 
     this.input.setDraggable(this.volumeThumb);
 
-    this.volumeThumb.on('drag', (pointer, dragX) => {
+    this.volumeThumb.on("drag", (pointer, dragX) => {
       const minX = this.volumeTrack.x;
       const maxX = this.volumeTrack.x + this.volumeTrack.width;
       const newX = Phaser.Math.Clamp(dragX, minX, maxX);
@@ -128,13 +211,13 @@ export class PauseMenu extends Scene {
     this.volumePanelElements = [
       this.volumePanelBg,
       this.volumeTrack,
-      this.volumeThumb
+      this.volumeThumb,
     ];
   }
 
   toggleVolumePanel() {
     if (!this.volumePanelElements) return;
     const visible = !this.volumePanelBg.visible;
-    this.volumePanelElements.forEach(el => el.setVisible(visible));
+    this.volumePanelElements.forEach((el) => el.setVisible(visible));
   }
 }

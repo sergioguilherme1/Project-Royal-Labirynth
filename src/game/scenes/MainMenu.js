@@ -72,7 +72,7 @@ export class MainMenu extends Scene {
     this.createSettingsButton();
     this.createSettingsPanel();
 
-    // Botão Instagram no canto inferior esquerdo
+    // Botão Instagram no canto inferior esquerdo com ícone vetorial
     this.createInstagramButton();
   }
 
@@ -87,21 +87,51 @@ export class MainMenu extends Scene {
       .setInteractive({ useHandCursor: true });
     this.instagramButton.add(instagramButtonBg);
 
-    const instagramIcon = this.add.text(0, 0, "📷", {
-      fontSize: "28px",
-      color: "#FFD700",
-      fontFamily: "Arial Black",
-    }).setOrigin(0.5);
-    this.instagramButton.add(instagramIcon);
+    // Ícone Instagram desenhado vetorialmente
+    const icon = this.add.graphics();
+    icon.lineStyle(3, 0xFFD700);
+    icon.fillStyle(0xFFD700);
+
+    // Quadrado externo com bordas arredondadas (ícone base)
+    const size = 24;
+    const radius = 6;
+    icon.strokeRoundedRect(-size/2, -size/2, size, size, radius);
+
+    // Círculo grande central (representando a lente da câmera)
+    icon.strokeCircle(0, 0, size / 3);
+
+    // Círculo interno preenchido (pupila)
+    icon.fillCircle(0, 0, size / 10);
+
+    // Círculo menor superior direito (flash)
+    icon.strokeCircle(size / 4, -size / 4, size / 10);
+
+    icon.setDepth(1);
+    icon.setPosition(0, 0);
+    this.instagramButton.add(icon);
 
     instagramButtonBg.on("pointerover", () => {
       instagramButtonBg.setFillStyle(0x294d77);
-      instagramIcon.setColor("#ffffff");
+      icon.clear();
+      icon.lineStyle(3, 0xffffff);
+      icon.fillStyle(0xffffff);
+
+      icon.strokeRoundedRect(-size/2, -size/2, size, size, radius);
+      icon.strokeCircle(0, 0, size / 3);
+      icon.fillCircle(0, 0, size / 10);
+      icon.strokeCircle(size / 4, -size / 4, size / 10);
     });
 
     instagramButtonBg.on("pointerout", () => {
       instagramButtonBg.setFillStyle(0x1e1e2f);
-      instagramIcon.setColor("#FFD700");
+      icon.clear();
+      icon.lineStyle(3, 0xFFD700);
+      icon.fillStyle(0xFFD700);
+
+      icon.strokeRoundedRect(-size/2, -size/2, size, size, radius);
+      icon.strokeCircle(0, 0, size / 3);
+      icon.fillCircle(0, 0, size / 10);
+      icon.strokeCircle(size / 4, -size / 4, size / 10);
     });
 
     instagramButtonBg.on("pointerdown", () => {
