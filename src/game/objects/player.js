@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 
 // Criação do player com tamanho, escala e hitbox
-export const createPlayer = (scene) => {
-  const player = scene.physics.add.sprite(82, 80, 'player');
+export const createPlayer = (scene, x, y) => {
+  const player = scene.physics.add.sprite(x, y, 'player');
   player.setScale(1.2);
   player.setSize(18, 10);
   player.setOffset(14, 24);

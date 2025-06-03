@@ -4,6 +4,49 @@ import { createPlayer } from '../objects/player';
 import { updatePlayer } from '../objects/player';
 import Minion, { createMinionAnimations } from '../objects/minion';
 
+const MAP_CONFIG = {
+        map: {
+            spawn: { x: 65, y: 60},
+            coins: [
+                { x: 45, y: 502 },
+                { x: 184, y: 715 },
+                { x: 440, y: 727 },
+                { x: 805, y: 487 },
+                { x: 184, y: 255 },
+                { x: 451, y: 593 },
+                { x: 473, y: 214 },
+                { x: 855, y: 721 },
+                { x: 978, y: 372 },
+                { x: 767, y: 132 }
+                // ...
+            ],
+            hearts: [
+                 { x: 40, y: 650 },
+                 { x: 424, y: 87 },
+                 { x: 758, y: 647 },
+                 { x: 928, y: 115 }
+               
+            ],
+            nextMap: 'map2'
+        },
+        map2: {
+            spawn: { x: 936, y: 89 },
+            coins: [
+                { x: 100, y: 200 },
+                { x: 300, y: 400 }
+            ],
+            hearts: [
+                { x: 150, y: 250 }
+            ],
+            nextMap: 'map3'
+        },
+        map3: {
+            spawn: { x: 512, y: 537 },
+            coins: [],
+            hearts: [],
+            nextMap: null // ou 'fim' se não tiver mais
+        }
+    };
 
 export class Game extends Scene {
     player;
@@ -15,11 +58,16 @@ export class Game extends Scene {
     constructor() {
         super('Game');
     }
+    
 
-    create() {
-        // Criando o mapa
-        const map = this.make.tilemap({ key: 'map' });
+
+        create(data) {
+        const mapKey = data?.mapKey || 'map';
+        const config = MAP_CONFIG[mapKey] || {};
+
+        const map = this.make.tilemap({ key: mapKey });
         const tiledset = map.addTilesetImage('assets', 'tiles');
+
         map.createLayer('fundo preto', tiledset, 0, 0);
         map.createLayer('chao', tiledset, 0, 0);
         const parede = map.createLayer('parede', tiledset, 0, 0);
@@ -28,50 +76,43 @@ export class Game extends Scene {
         map.createLayer('portao', tiledset, 0, 0);
         map.createLayer('agua', tiledset, 0, 0);
         map.createLayer('detalhes', tiledset, 0, 0);
-        map.createLayer('fim', tiledset, 0, 0);
         const objetos = map.createLayer('objetos', tiledset, 0, 0);
         objetos.setCollisionByProperty({ collides: true });
 
-        // Criando o player
-        this.player = createPlayer(this);
-        this.player.health = 3;
+    
+
+        // Player
+        const spawn = config.spawn || { x: 0, y: 0 };
+        this.player = createPlayer(this, spawn.x, spawn.y);
         this.player.maxHealth = 3;
+        this.player.health = data?.health ?? 3;
 
-        this.restartKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+        // Layer de fim de fase
+        const fim = map.createLayer('fim', tiledset, 0, 0);
+        fim.setCollisionByProperty({ fim: true });
 
-        // Corações no mapa
-        this.heartsGroup = this.physics.add.group();
-        [
-            { x: 40, y: 650 },
-            { x: 424, y: 87 },
-            { x: 758, y: 647 },
-            { x: 928, y: 115 }
-        ].forEach(pos => {
-            const heart = this.heartsGroup.create(pos.x, pos.y, 'heart_item');
-            heart.setScale(0.03);
+        this.physics.add.collider(this.player, fim, () => {
+            if (config.nextMap) {
+                this.scene.restart({ mapKey: config.nextMap, health: this.player.health });
+            }
         });
-        this.physics.add.overlap(this.player, this.heartsGroup, this.collectHeart, null, this);
 
         // Moedas
         this.coins = this.physics.add.group();
-        [
-            { x: 45, y: 502 },
-            { x: 184, y: 715 },
-            { x: 440, y: 727 },
-            { x: 805, y: 487 },
-            { x: 184, y: 255 },
-            { x: 451, y: 593 },
-            { x: 473, y: 214 },
-            { x: 855, y: 721 },
-            { x: 978, y: 372 },
-            { x: 767, y: 132 }
-
-        ].forEach(pos => {
+        (config.coins || []).forEach(pos => {
             const coin = this.coins.create(pos.x, pos.y, 'coin');
             coin.setScale(0.03);
             coin.setBounce(0.5);
         });
         this.physics.add.overlap(this.player, this.coins, this.collectCoin, null, this);
+
+        // Corações
+        this.heartsGroup = this.physics.add.group();
+        (config.hearts || []).forEach(pos => {
+            const heart = this.heartsGroup.create(pos.x, pos.y, 'heart_item');
+            heart.setScale(0.03);
+        });
+        this.physics.add.overlap(this.player, this.heartsGroup, this.collectHeart, null, this);
 
         // Lacaios
         this.minions = this.physics.add.group();
@@ -113,13 +154,13 @@ export class Game extends Scene {
             .setScrollFactor(0)
             .setScale(0.05);
 
-        this.coinText = this.add.text(coinIconX + 20, topY + 8, '0', {
-            fontSize: '16px',
-            fill: '#fff',
-            fontFamily: 'monospace'
+        this.coinText = this.add.text(coinIconX + 20, topY + 8, '', {
+        fontSize: '16px',
+        fill: '#fff',
+        fontFamily: 'monospace'
         }).setScrollFactor(0);
 
-
+        this.coinText.setText(this.coinCount.toString());
 
 
         // Colisões
@@ -132,6 +173,8 @@ export class Game extends Scene {
         this.physics.add.collider(this.player, objetos);
         this.physics.add.collider(this.minions, objetos);
 
+        fim.setCollisionByExclusion([-1]);
+
         // Teclado
         this.cursors = this.input.keyboard.createCursorKeys();
         this.keys = this.input.keyboard.addKeys({
@@ -139,7 +182,7 @@ export class Game extends Scene {
             down: Phaser.Input.Keyboard.KeyCodes.S,
             left: Phaser.Input.Keyboard.KeyCodes.A,
             right: Phaser.Input.Keyboard.KeyCodes.D,
-            F: Phaser.Input.Keyboard.KeyCodes.F
+            F: Phaser.Input.Keyboard.KeyCodes.F,
         });
 
         // HUD de Game Over
