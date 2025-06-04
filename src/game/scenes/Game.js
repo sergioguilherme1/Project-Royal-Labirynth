@@ -115,7 +115,7 @@ export class Game extends Scene {
     create(data) {
         const mapKey = data?.mapKey || 'map';
         const config = MAP_CONFIG[mapKey] || {};
-
+        
         const map = this.make.tilemap({ key: mapKey });
         const tiledset = map.addTilesetImage('assets', 'tiles');
 
@@ -135,7 +135,6 @@ export class Game extends Scene {
         this.player = createPlayer(this, spawn.x, spawn.y);
         this.player.health = data?.health ?? 3;
         this.player.maxHealth = 3;
-        this.updateHearts();
 
         //Boss
         if(mapKey === 'map3'){
@@ -192,6 +191,7 @@ export class Game extends Scene {
         this.physics.add.overlap(this.player, this.coins, this.collectCoin, null, this);
 
         // Corações
+        this.hearts = [];
         this.heartsGroup = this.physics.add.group();
         (config.hearts || []).forEach(pos => {
             const heart = this.heartsGroup.create(pos.x, pos.y, 'heart_item');
@@ -221,6 +221,8 @@ export class Game extends Scene {
             this.hearts.push(heart);
         }
 
+        this.updateHearts();
+
         // Ícone da moeda e texto
         const coinIconX = baseX + hudWidth - 70;
         this.add.image(coinIconX, topY + 16, 'coin_icon')
@@ -241,16 +243,15 @@ export class Game extends Scene {
         this.physics.add.collider(this.minions, this.player);
         this.physics.add.collider(this.minions, this.player, () => {
           if (!this.player.isDying) {  // Verifica se o jogador não está morrendo
-            console.log(`Vida do jogador antes do dano: ${this.player.health}`);
-            this.player.health--;  // Diminui a vida do jogador
-            this.updateHearts();    // Atualiza os corações na tela
+              console.log(`Vida do jogador antes do dano: ${this.player.health}`);
+              this.player.health--;  // Diminui a vida do jogador
+              this.updateHearts();    // Atualiza os corações na tela
 
-            // Se a vida do jogador for menor ou igual a 0, chama a função de morte
-            if (this.player.health <= 0) {
-              this.checkPlayerDeath();  // Lógica de morte do jogador
-            }
+              if (this.player.health <= 0) {
+                  this.checkPlayerDeath();  // Lógica de morte do jogador
+              }
 
-            console.log(`Vida do jogador depois do dano: ${this.player.health}`);
+              console.log(`Vida do jogador depois do dano: ${this.player.health}`);
           }
         });
 
@@ -341,20 +342,30 @@ export class Game extends Scene {
   }
 
   updateHearts() {
-    for (let i = 0; i < this.hearts.length; i++) {
-      const heart = this.hearts[i];
-      if (heart && heart.setTexture && heart.scene) {
-        const texture = i < this.player.health ? 'heart_full' : 'heart_empty';
-        heart.setTexture(texture);
-      }
+    // Verificar se `this.hearts` foi inicializado corretamente
+    if (!this.hearts) {
+        console.error("O array de corações não foi inicializado!");
+        return;
     }
 
-    console.log("Vida do jogador:", this.player.health);  // Logando a vida do jogador
-    
-    // Verifica se o jogador perdeu todos os corações
+    // Atualizar a exibição de corações com base na vida do jogador
+    for (let i = 0; i < this.player.maxHealth; i++) {
+        const heart = this.hearts[i];
+        if (heart) {
+            const texture = i < this.player.health ? 'heart_full' : 'heart_empty';
+            // Alterando a textura dos corações conforme a vida
+            if (heart.texture.key !== texture) {
+                heart.setTexture(texture);
+            }
+        }
+    }
+
+    console.log("Vida do jogador:", this.player.health);
+
+    // Verifica se a vida do jogador chegou a 0
     if (this.player.health <= 0 && !this.isGameOver) {
-      console.log("Jogador morreu!");
-      this.checkPlayerDeath();  // Chama a função de morte
+        console.log("Jogador morreu!");
+        this.checkPlayerDeath();  // Chama a função de morte
     }
   }
 
