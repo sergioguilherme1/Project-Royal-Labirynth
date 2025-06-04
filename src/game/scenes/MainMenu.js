@@ -66,7 +66,7 @@ export class MainMenu extends Scene {
     }).setOrigin(1, 0);  // alinhado à direita e topo
 
     // Música de fundo original
-    this.menuMusic = this.sound.add("menuMusic", { loop: true, volume: 0.5 });
+    this.menuMusic = this.sound.add("menuMusic", { loop: true, volume: 0.3 });
     this.menuMusic.play();
 
     // Cria modal de ajuda antes dos botões

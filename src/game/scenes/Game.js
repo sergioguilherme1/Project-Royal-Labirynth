@@ -132,9 +132,27 @@ export class Game extends Scene {
 
         // Player
         const spawn = config.spawn || { x: 0, y: 0 };
+        this.bgMusic = this.sound.add('gameMusic', { loop: true });
+        this.bgMusic.setVolume(0.5); 
+        this.bgMusic.play();
         this.player = createPlayer(this, spawn.x, spawn.y);
         this.player.health = data?.health ?? 3;
         this.player.maxHealth = 3;
+
+    if (mapKey === 'map3') {
+        this.bgMusic.setVolume(0.1); 
+        if (!this.dragonSound) {
+            this.dragonSound = this.sound.add('dragon-sound', { loop: true });
+        }
+        this.dragonSound.play();
+        this.dragonSound.setVolume(0.8); 
+        if (!this.fireSound) {
+            this.fireSound = this.sound.add('fire-sound', { loop: true });
+        }
+        this.fireSound.play();
+        this.fireSound.setVolume(0.6); 
+    }
+
 
         //Boss
         if(mapKey === 'map3'){
@@ -352,6 +370,9 @@ export class Game extends Scene {
     coin.disableBody(true, true);
     this.coinCount++;
     this.coinText.setText(this.coinCount);
+    this.coinSound = this.sound.add('coinSound');
+    this.coinSound.play();
+    this.coinSound.setVolume(0.4);
   }
 
     collectHeart(player, heart) {
@@ -367,6 +388,10 @@ export class Game extends Scene {
             this.player.health++;
             this.updateHearts();
         }
+
+        this.heartSound = this.sound.add('heartSound');
+        this.heartSound.play();
+        this.heartSound.setVolume(0.4);
     }
 
     updateHearts() {

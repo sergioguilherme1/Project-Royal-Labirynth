@@ -31,9 +31,14 @@ export class Preloader extends Scene {
         // Áudios
         this.load.audio("click", "audio/click.mp3");
         this.load.audio("menuMusic", "audio/menu-theme.mp3");
-        this.load.audio("attack", "audio/attack.mp3"); // ataque do player
-        this.load.audio('dragonAttack', 'audio/dragon_attack.wav'); // Ataque do boss
-        this.load.audio('orcHit', 'audio/danolacaio.wav'); // Lacaios sofrendo dano
+        this.load.audio("attack", "audio/attack.mp3"); 
+        this.load.audio('dragonAttack', 'audio/dragon_attack.mp3'); 
+        this.load.audio('orcHit', 'audio/danolacaio.wav'); 
+        this.load.audio('gameMusic', "audio/game-theme.mp3");
+        this.load.audio('coinSound', 'audio/coins-sound.mp3');
+        this.load.audio('heartSound', 'audio/heart-sound.mp3');
+        this.load.audio('dragon-sound', 'audio/dragon-sound.mp3');
+        this.load.audio('fire-sound', 'audio/fire-sound.mp3');
         
         // UI e itens
         this.load.image('heart_full', 'ui/heart_full.png');
