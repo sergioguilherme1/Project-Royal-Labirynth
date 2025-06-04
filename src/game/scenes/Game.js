@@ -113,12 +113,19 @@ export class Game extends Scene {
     }
 
     create(data) {
+
+        if (this.menuMusic && this.menuMusic.isPlaying) {
+           this.menuMusic.stop();
+        };
         
         const mapKey = data?.mapKey || 'map';
         const config = MAP_CONFIG[mapKey] || {};
         
         const map = this.make.tilemap({ key: mapKey });
         const tiledset = map.addTilesetImage('assets', 'tiles');
+
+        this.menuMusic = this.sound.add('menuMusic', { loop: true, volume: 0.5 });
+        this.menuMusic.play();
 
         map.createLayer('fundo preto', tiledset, 0, 0);
         map.createLayer('chao', tiledset, 0, 0);
