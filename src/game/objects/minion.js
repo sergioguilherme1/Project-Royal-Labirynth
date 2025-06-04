@@ -15,6 +15,9 @@ export default class Minion extends Phaser.Physics.Arcade.Sprite {
     this.body.setImmovable(false);
 
     this.health = 2;
+    this.maxHealth = 2;
+    this.healthBar = scene.add.graphics();
+    this.updateHealthBar();
     this.alive = true;
 
     this.patrolSpeed = 30;  
@@ -33,19 +36,19 @@ export default class Minion extends Phaser.Physics.Arcade.Sprite {
     this.attackCooldown = 0;
     this.attackRange = 30;
     this.attackRate = 1500;
+    this.initialAttackDelay = 750;
   }
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
 
+    this.updateHealthBar();
     if (!this.active || !this.target?.active || !this.alive) return;
 
-    // Cálculo da distância entre o minion e o jogador
-    const dx = this.target.x - this.x; 
-    const dy = this.target.y - this.y; 
+    const dx = this.target.x - this.x;
+    const dy = this.target.y - this.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
     const detectionRange = 60;
 
-    //Parar patrulha e ir em direçaõ ao jogador
     if (distance <= detectionRange) {
       this.isAttacking = true;
     }
@@ -54,39 +57,32 @@ export default class Minion extends Phaser.Physics.Arcade.Sprite {
       if (distance <= this.attackRange) {
         this.setVelocity(0);
 
-        if (time > this.attackCooldown) {
+        if (this.attackCooldown === 0) {
+          this.attackCooldown = time + this.initialAttackDelay;
+        } else if (time > this.attackCooldown) {
           this.attackCooldown = time + this.attackRate;
 
-          // Toca animação de ataque na direção correta
           const direction = this.getDirection(dx, dy);
           this.play(`minion_attack_${direction}`, true);
 
-          // Aplica dano ao jogador (exemplo)
-          if (this.target.health && this.target.health > 0) {
-            this.target.health--;
+          if (!this.target.isDying) {
+            this.target.health = Math.max(0, this.target.health - 1);
             this.scene.updateHearts();
 
-            if (this.target.health <= 0) {
-              this.target.setVelocity(0);
-              this.target.play('player_die');
-              this.target.once('animationcomplete', () => {
-              this.scene.handleGameOver();
-              });
+            if (this.target.health <= 0 && !this.target.isDying) {
+              this.scene.checkPlayerDeath();
             }
           }
         }
       } else {
-          // Persegue o jogador andando normalmente
         this.speed = this.attackingSpeed;
         const angle = Math.atan2(dy, dx);
         this.setVelocity(Math.cos(angle) * this.speed, Math.sin(angle) * this.speed);
 
-        // Animação de caminhada conforme direção
         const direction = this.getDirection(dx, dy);
         this.play(`minion_walk_${direction}`, true);
       }
     } else {
-      // Patrulha do minion
       const targetPoint = this.patrolPoints[this.currentPatrolIndex];
       const dx = targetPoint.x - this.x;
       const dy = targetPoint.y - this.y;
@@ -102,26 +98,17 @@ export default class Minion extends Phaser.Physics.Arcade.Sprite {
 
         const currentAnim = this.anims.getName();
         let desiredAnim;
-        // animação de caminhada conforme direção
         if (Math.abs(dx) > Math.abs(dy)) {
-          if (dx > 0) {
-            desiredAnim = 'minion_walk_right';
-          } else {
-            desiredAnim = 'minion_walk_left';
-          }
+          desiredAnim = dx > 0 ? 'minion_walk_right' : 'minion_walk_left';
         } else {
-          if (dy > 0) {
-            desiredAnim = 'minion_walk_down';
-          } else {
-            desiredAnim = 'minion_walk_up';
-          }
+          desiredAnim = dy > 0 ? 'minion_walk_down' : 'minion_walk_up';
         }
         if (!currentAnim || currentAnim !== desiredAnim) {
-        this.play(desiredAnim, true);
+          this.play(desiredAnim, true);
         }
       }
     }
-  }
+  } 
   die() {
     this.alive = false;
     this.setVelocity(0);
@@ -135,6 +122,7 @@ export default class Minion extends Phaser.Physics.Arcade.Sprite {
         this.setDepth(5);
         this.disableBody(true, true);
       }
+      this.healthBar.destroy();
     });
   }
 
@@ -153,7 +141,21 @@ export default class Minion extends Phaser.Physics.Arcade.Sprite {
     if (anim.includes('down')) return 'down';
     if (anim.includes('left')) return 'left';
     if (anim.includes('right')) return 'right';
-    return 'down'; // padrão
+    return 'down';
+  }
+
+  updateHealthBar() {
+    const barWidth = 25;
+    const barHeight = 4;
+    const offsetY = -30;
+
+    this.healthBar.clear();
+    this.healthBar.fillStyle(0x000000); 
+    this.healthBar.fillRect(this.x - barWidth / 2, this.y + offsetY, barWidth, barHeight);
+
+    const healthRatio = this.health / this.maxHealth;
+    this.healthBar.fillStyle(0xff0000);
+    this.healthBar.fillRect(this.x - barWidth / 2, this.y + offsetY, barWidth * healthRatio, barHeight);
   }
 }
 

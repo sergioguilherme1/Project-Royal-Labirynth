@@ -2,7 +2,7 @@ import { Scene } from 'phaser';
 import { createPlayer } from '../objects/player';
 import { updatePlayer } from '../objects/player';
 import Minion, { createMinionAnimations } from '../objects/minion';
-import Boss, { loadBossSprites, loadBossAtackSprites, loadBossMortSprites, createBossAnimations } from '../objects/boss';
+import Boss, { createBossAnimations } from '../objects/boss';
 
 const MAP_CONFIG = {
     map: {
@@ -99,8 +99,6 @@ const MINIONS_CONFIG = {
   ]
 };
 
-const LAST_MAP_WITH_BOSS = 'map3';
-
 export class Game extends Scene {
   player;
   hearts = [];
@@ -112,9 +110,6 @@ export class Game extends Scene {
 
     constructor() {
         super('Game');
-    }
-         preload() {
-    this.load.audio('dragonAttack', 'assets/audio/dragon_attack.wav');
     }
 
     create(data) {
@@ -138,10 +133,11 @@ export class Game extends Scene {
         // Player
         const spawn = config.spawn || { x: 0, y: 0 };
         this.player = createPlayer(this, spawn.x, spawn.y);
+        this.player.health = data?.health ?? 3;
         this.player.maxHealth = 3;
 
         //Boss
-        if(mapKey === LAST_MAP_WITH_BOSS){
+        if(mapKey === 'map3'){
             createBossAnimations(this);
             const bossPatrol = [
             { x: 511, y: 295 },
@@ -306,12 +302,28 @@ export class Game extends Scene {
   }
 
   update() {
+    if (this.isGameOver && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
+      this.scene.restart({ mapKey: 'map' });
+      return;
+    }
+
+    // Impede update se o jogo já acabou
+    if (this.isGameOver || !this.player || !this.player.active) {
+      return;
+    }
+
     updatePlayer(this.player, this.cursors, this.keys);
 
-        if (Phaser.Input.Keyboard.JustDown(this.keys.F)) {
-            this.attackEnemy();
-        }
+    // Checar morte — redundante, mas seguro
+    if (this.player.health <= 0 && !this.player.isDying) {
+      this.checkPlayerDeath();
+      return; // Evita lógicas seguintes
     }
+
+    if (Phaser.Input.Keyboard.JustDown(this.keys.F)) {
+      this.attackEnemy();
+    }
+  }
 
   handleGameOver() {
     if (this.isGameOver) return;
@@ -321,6 +333,20 @@ export class Game extends Scene {
     this.gameOverText.setVisible(true);
     this.restartText.setVisible(true);
   }
+
+  checkPlayerDeath() {
+    if (this.isGameOver || !this.player || this.player.isDying) return;
+
+    this.player.isDying = true;
+    this.player.setVelocity(0);
+    this.player.anims.stop();
+    this.player.play('die_down');
+
+    this.player.once('animationcomplete', () => {
+      this.handleGameOver();
+    });
+  }
+
 
   collectCoin(player, coin) {
     coin.disableBody(true, true);
@@ -344,14 +370,13 @@ export class Game extends Scene {
     }
 
     updateHearts() {
-        for (let i = 0; i < this.hearts.length; i++) {
-            const heart = this.hearts[i];
-            // Verifica se o heart existe e está ativo na cena
-            if (heart && heart.setTexture && heart.scene) {
-                const texture = i < this.player.health ? 'heart_full' : 'heart_empty';
-                heart.setTexture(texture);
-            }
+      for (let i = 0; i < this.hearts.length; i++) {
+        const heart = this.hearts[i];
+        if (heart && heart.setTexture && heart.scene) {
+          const texture = i < this.player.health ? 'heart_full' : 'heart_empty';
+          heart.setTexture(texture);
         }
+      }
     }
 
   attackEnemy() {

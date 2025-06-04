@@ -79,6 +79,35 @@ export const createAnimations = (scene) => {
     repeat: 0 
   });
 
+  // Morte
+  scene.anims.create({
+    key: 'die_down',
+    frames: [ { key: 'player', frame: 58 } ],
+    frameRate: 8,
+    repeat: 0
+  });
+
+  scene.anims.create({
+    key: 'die_left',
+    frames: [ { key: 'player', frame: 70 } ],
+    frameRate: 8,
+    repeat: 0
+  });
+
+  scene.anims.create({
+    key: 'die_right',
+    frames: [ { key: 'player', frame: 82 } ],
+    frameRate: 8,
+    repeat: 0
+  });
+
+  scene.anims.create({
+    key: 'die_up',
+    frames: [ { key: 'player', frame: 94 } ],
+    frameRate: 8,
+    repeat: 0
+  });
+
 };
 
 // Atualiza o jogador conforme teclas
