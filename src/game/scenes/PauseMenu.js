@@ -71,7 +71,7 @@ export class PauseMenu extends Scene {
     this.returnBtn.on("pointerdown", () => {
       const gameScene = this.scene.get("Game");
       if (gameScene.menuMusic && gameScene.menuMusic.isPlaying) {
-        gameScene.menuMusic.stop();
+        gameScene.menuMusic.stop(); // Parando a música do jogo antes de ir ao menu
       }
       this.scene.stop("Game");
       this.scene.start("MainMenu");

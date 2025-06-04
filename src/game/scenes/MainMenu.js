@@ -47,11 +47,18 @@ export class MainMenu extends Scene {
     });
     buttonBg.on("pointerdown", () => {
       clickSound.play();
-      this.menuMusic.stop();
+      if (this.menuMusic && this.menuMusic.isPlaying) {
+        this.menuMusic.stop(); // Parar a música do menu
+    }
+      // FADE OUT PARA A TRANSIÇÃO
       this.cameras.main.fadeOut(500);
-      this.time.delayedCall(500, () => this.scene.start("Game"));
+      this.time.delayedCall(500, () => {
+        this.scene.start("Game");
+      });
     });
+
     buttonText.on("pointerdown", () => buttonBg.emit("pointerdown"));
+
 
     // Texto de direitos autorais no canto superior esquerdo
     this.add.text(10, 10, "Royal Labyrinth © - 2025", {
@@ -252,7 +259,7 @@ export class MainMenu extends Scene {
       .setInteractive({ useHandCursor: true });
     this.settingsButton.add(settingsButtonBg);
 
-    const settingsIcon = this.add.text(0, 0, "⚙️", {
+    const settingsIcon = this.add.text(0, 0, "⚙", {
       fontSize: "32px",
       color: "#FFD700",
     }).setOrigin(0.5);
