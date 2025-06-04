@@ -211,7 +211,7 @@ export class Game extends Scene {
         const hudWidth = 200;
 
         // Canto superior direito
-        const baseX = cameraWidth - hudWidth;
+        const baseX = cameraWidth - hudWidth - 70;
 
         // Fundo da HUD
         const hudBg = this.add.graphics();
@@ -278,7 +278,7 @@ export class Game extends Scene {
     }
 
     createPauseGameButton() {
-        const xBase = this.cameras.main.width - 240;
+        const xBase = this.cameras.main.width - 40;
         const yBase = 24;
 
         this.pauseGameButton = this.add.container(xBase, yBase);
