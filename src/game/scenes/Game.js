@@ -78,11 +78,13 @@ const MINIONS_CONFIG = {
 const LAST_MAP_WITH_BOSS = 'map3';
 
 export class Game extends Scene {
-    player;
-    hearts = [];
-    coinCount = 0;
-    coinText;
-    attackCooldown = 0;
+  player;
+  hearts = [];
+  coinCount = 0;
+  coinText;
+  attackCooldown = 0;
+
+  pauseGameButton;
 
     constructor() {
         super('Game');
@@ -233,45 +235,74 @@ export class Game extends Scene {
             F: Phaser.Input.Keyboard.KeyCodes.F,
         });
 
-        // HUD de Game Over
-        const centerX = this.cameras.main.centerX;
-        const centerY = this.cameras.main.centerY;
-        this.gameOverText = this.add.text(centerX, centerY - 20, 'GAME OVER', {
-            fontSize: '48px', fill: '#ff0000', fontFamily: 'monospace'
-        }).setOrigin(0.5).setScrollFactor(0).setVisible(false);
-        this.restartText = this.add.text(centerX, centerY + 30, 'Pressione R para reiniciar', {
-            fontSize: '20px', fill: '#ffffff', fontFamily: 'monospace'
-        }).setOrigin(0.5).setScrollFactor(0).setVisible(false);
+    const centerX = this.cameras.main.centerX;
+    const centerY = this.cameras.main.centerY;
+    this.gameOverText = this.add.text(centerX, centerY - 20, 'GAME OVER', {
+      fontSize: '48px', fill: '#ff0000', fontFamily: 'monospace'
+    }).setOrigin(0.5).setScrollFactor(0).setVisible(false);
+    this.restartText = this.add.text(centerX, centerY + 30, 'Pressione R para reiniciar', {
+      fontSize: '20px', fill: '#ffffff', fontFamily: 'monospace'
+    }).setOrigin(0.5).setScrollFactor(0).setVisible(false);
 
-        this.isGameOver = false;
-    }
+    this.isGameOver = false;
+  }
 
-    update() {
-        if (this.isGameOver && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
-            this.scene.restart();
-        }
+  createPauseGameButton() {
+    const xBase = this.cameras.main.width - 40;
+    const yBase = 24; // subido para alinhar melhor
 
-        updatePlayer(this.player, this.cursors, this.keys);
+    this.pauseGameButton = this.add.container(xBase, yBase);
+
+    const pauseBtnBg = this.add.rectangle(0, 0, 40, 40, 0x1e1e2f) // tamanho menor
+      .setStrokeStyle(3, 0xffd700)
+      .setInteractive({ useHandCursor: true });
+    this.pauseGameButton.add(pauseBtnBg);
+
+    const pauseText = this.add.text(0, 0, "≡", {
+      fontSize: "24px", // tamanho da fonte menor
+      color: "#FFD700",
+      fontFamily: "Arial Black"
+    }).setOrigin(0.5);
+    this.pauseGameButton.add(pauseText);
+
+    pauseBtnBg.on("pointerover", () => {
+      pauseBtnBg.setFillStyle(0x294d77);
+      pauseText.setColor("#ffffff");
+    });
+
+    pauseBtnBg.on("pointerout", () => {
+      pauseBtnBg.setFillStyle(0x1e1e2f);
+      pauseText.setColor("#FFD700");
+    });
+
+    pauseBtnBg.on("pointerdown", () => {
+      this.scene.launch('PauseMenu');
+      this.scene.pause();
+    });
+  }
+
+  update() {
+    updatePlayer(this.player, this.cursors, this.keys);
 
         if (Phaser.Input.Keyboard.JustDown(this.keys.F)) {
             this.attackEnemy();
         }
     }
 
-    handleGameOver() {
-        if (this.isGameOver) return;
-        this.isGameOver = true;
-        this.player.setVelocity(0);
-        this.physics.pause();
-        this.gameOverText.setVisible(true);
-        this.restartText.setVisible(true);
-    }
+  handleGameOver() {
+    if (this.isGameOver) return;
+    this.isGameOver = true;
+    this.player.setVelocity(0);
+    this.physics.pause();
+    this.gameOverText.setVisible(true);
+    this.restartText.setVisible(true);
+  }
 
-    collectCoin(player, coin) {
-        coin.disableBody(true, true);
-        this.coinCount++;
-        this.coinText.setText(this.coinCount);
-    }
+  collectCoin(player, coin) {
+    coin.disableBody(true, true);
+    this.coinCount++;
+    this.coinText.setText(this.coinCount);
+  }
 
     collectHeart(player, heart) {
         heart.disableBody(true, true);
@@ -299,16 +330,16 @@ export class Game extends Scene {
         }
     }
 
-    attackEnemy() {
-        const now = this.time.now;
-        if (now < this.attackCooldown) return;
-        this.attackCooldown = now + 500;
+  attackEnemy() {
+    const now = this.time.now;
+    if (now < this.attackCooldown) return;
+    this.attackCooldown = now + 500;
 
-        const range = 50;
-        this.minions.getChildren().forEach(minion => {
-            const dx = minion.x - this.player.x;
-            const dy = minion.y - this.player.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+    const range = 50;
+    this.minions.getChildren().forEach(minion => {
+      const dx = minion.x - this.player.x;
+      const dy = minion.y - this.player.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
 
             if (distance <= range) {
                 minion.health--;
