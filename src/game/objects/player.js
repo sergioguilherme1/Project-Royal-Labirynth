@@ -10,7 +10,7 @@ export const createPlayer = (scene, x, y) => {
   player.setDepth(10);
 
   // Vida do jogador
-  player.maxHealth = 3;
+  player.maxHealth = 5;
   player.currentHealth = 3;
 
   createAnimations(scene);
