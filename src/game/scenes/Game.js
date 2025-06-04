@@ -135,6 +135,7 @@ export class Game extends Scene {
         this.player = createPlayer(this, spawn.x, spawn.y);
         this.player.health = data?.health ?? 3;
         this.player.maxHealth = 3;
+        this.updateHearts();
 
         //Boss
         if(mapKey === 'map3'){
@@ -238,6 +239,20 @@ export class Game extends Scene {
         this.physics.add.collider(this.player, parede);
         this.physics.add.collider(this.minions, parede);
         this.physics.add.collider(this.minions, this.player);
+        this.physics.add.collider(this.minions, this.player, () => {
+          if (!this.player.isDying) {  // Verifica se o jogador não está morrendo
+            console.log(`Vida do jogador antes do dano: ${this.player.health}`);
+            this.player.health--;  // Diminui a vida do jogador
+            this.updateHearts();    // Atualiza os corações na tela
+
+            // Se a vida do jogador for menor ou igual a 0, chama a função de morte
+            if (this.player.health <= 0) {
+              this.checkPlayerDeath();  // Lógica de morte do jogador
+            }
+
+            console.log(`Vida do jogador depois do dano: ${this.player.health}`);
+          }
+        });
 
         objetos.setCollisionByExclusion([-1]); 
         this.physics.add.collider(this.player, objetos);
@@ -317,7 +332,7 @@ export class Game extends Scene {
     // Checar morte — redundante, mas seguro
     if (this.player.health <= 0 && !this.player.isDying) {
       this.checkPlayerDeath();
-      return; // Evita lógicas seguintes
+      return;
     }
 
     if (Phaser.Input.Keyboard.JustDown(this.keys.F)) {
@@ -325,28 +340,57 @@ export class Game extends Scene {
     }
   }
 
-  handleGameOver() {
-    if (this.isGameOver) return;
-    this.isGameOver = true;
-    this.player.setVelocity(0);
-    this.physics.pause();
-    this.gameOverText.setVisible(true);
-    this.restartText.setVisible(true);
+  updateHearts() {
+    for (let i = 0; i < this.hearts.length; i++) {
+      const heart = this.hearts[i];
+      if (heart && heart.setTexture && heart.scene) {
+        const texture = i < this.player.health ? 'heart_full' : 'heart_empty';
+        heart.setTexture(texture);
+      }
+    }
+
+    console.log("Vida do jogador:", this.player.health);  // Logando a vida do jogador
+    
+    // Verifica se o jogador perdeu todos os corações
+    if (this.player.health <= 0 && !this.isGameOver) {
+      console.log("Jogador morreu!");
+      this.checkPlayerDeath();  // Chama a função de morte
+    }
   }
 
+
   checkPlayerDeath() {
-    if (this.isGameOver || !this.player || this.player.isDying) return;
+    console.log("Verificando a morte do jogador...");
 
-    this.player.isDying = true;
-    this.player.setVelocity(0);
-    this.player.anims.stop();
-    this.player.play('die_down');
+    // Se o jogo já estiver terminado ou o jogador estiver morrendo, não faz nada
+    if (this.isGameOver || !this.player || this.player.isDying) {
+      console.log("O jogo já terminou ou o jogador está em animação de morte.");
+      return;
+    }
 
+    // Imediatamente pausa o jogo e chama o game over
+    this.isGameOver = true;
+    this.player.setVelocity(0);  // Para o movimento do jogador
+    this.physics.pause();  // Pausa a física do jogo
+
+    this.player.isDying = true;  // Marca que o jogador está morrendo
+    this.player.anims.stop();    // Para qualquer animação do jogador
+    this.player.play('die_down'); // Inicia a animação de morte
+
+    // O game over é tratado assim que a animação terminar
     this.player.once('animationcomplete', () => {
-      this.handleGameOver();
+      console.log("Animação de morte completa, game over.");
+      this.handleGameOver();  // Chama a função para finalizar o jogo
     });
   }
 
+  handleGameOver() {
+    console.log("Game Over!");
+
+    // Exibe o texto de Game Over imediatamente
+    this.gameOverText.setVisible(true);  
+    this.restartText.setVisible(true);  // Exibe o texto para reiniciar
+  }
 
   collectCoin(player, coin) {
     coin.disableBody(true, true);
@@ -369,19 +413,11 @@ export class Game extends Scene {
         }
     }
 
-    updateHearts() {
-      for (let i = 0; i < this.hearts.length; i++) {
-        const heart = this.hearts[i];
-        if (heart && heart.setTexture && heart.scene) {
-          const texture = i < this.player.health ? 'heart_full' : 'heart_empty';
-          heart.setTexture(texture);
-        }
-      }
-    }
-
   attackEnemy() {
     const now = this.time.now;
     if (now < this.attackCooldown) return;
+
+    console.log("Atacando inimigos...");  // Logando quando o ataque é feito
     this.attackCooldown = now + 500;
 
     const range = 50;
@@ -390,17 +426,17 @@ export class Game extends Scene {
       const dy = minion.y - this.player.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-            if (distance <= range) {
-                minion.health--;
+      if (distance <= range) {
+        minion.health--;
+        this.sound.play('orcHit');
 
-                 this.sound.play('orcHit');
-                 
-                if (minion.health <= 0) {
-                    minion.die();
-                } else {
-                    minion.play('minion_hit', true);
-                }
-            }
-        });
-    }
+        console.log("Minion atingido, vida:", minion.health);  // Logando a vida do minion
+        if (minion.health <= 0) {
+          minion.die();
+        } else {
+          minion.play('minion_hit', true);
+        }
+      }
+    });
+  }
 }
