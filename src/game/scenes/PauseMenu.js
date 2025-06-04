@@ -37,6 +37,7 @@ export class PauseMenu extends Scene {
     );
     graphics.setDepth(1);
 
+    // Botão Continuar
     this.continueBtn = this.add
       .text(panelX, panelY - 100, "Continuar", {
         fontSize: "28px",
@@ -55,6 +56,7 @@ export class PauseMenu extends Scene {
       this.scene.resume("Game");
     });
 
+    // Botão Voltar ao Menu
     this.returnBtn = this.add
       .text(panelX, panelY - 50, "Voltar ao Menu", {
         fontSize: "28px",
@@ -68,19 +70,41 @@ export class PauseMenu extends Scene {
       .setOrigin(0.5)
       .setDepth(2)
       .setInteractive({ useHandCursor: true });
-      this.returnBtn.on("pointerdown", () => {
+    this.returnBtn.on("pointerdown", () => {
       const gameScene = this.scene.get("Game");
-       if (gameScene.menuMusic && gameScene.menuMusic.isPlaying) {
+      if (gameScene.menuMusic && gameScene.menuMusic.isPlaying) {
         gameScene.menuMusic.stop(); // Parando a música do jogo antes de ir ao menu
       }
       this.scene.stop("Game");
-      this.scene.start("MainMenu");  // Volta para o menu principal
-     this.scene.stop();
-      });
+      this.scene.start("MainMenu");
+      this.scene.stop();
+    });
+
+    // Botão para reiniciar o jogo
+    this.restartBtn = this.add
+      .text(panelX, panelY, "Reiniciar Jogo", {
+        fontSize: "28px",
+        fill: "#FFD700",
+        fontFamily: "monospace",
+        fontStyle: "bold",
+        stroke: "#000000",
+        strokeThickness: 3,
+        shadow: { offsetX: 2, offsetY: 2, color: "#000", blur: 4, fill: true },
+      })
+      .setOrigin(0.5)
+      .setDepth(2)
+      .setInteractive({ useHandCursor: true });
+    this.restartBtn.on("pointerdown", () => {
+      const gameScene = this.scene.get("Game");
+      // Reiniciar a cena "Game" do início
+      gameScene.scene.restart({ mapKey: 'map', health: 3 });
+      this.scene.stop();
+      this.scene.start("Game", { mapKey: 'map', health: 3 });
+    });
 
     // Ícone de Volume (🔉) com texto "Volume" abaixo
     const volumeX = panelX - 70;
-    const volumeY = panelY + 40;
+    const volumeY = panelY + 55;
 
     this.volumeIcon = this.add
       .text(volumeX, volumeY, "🔉", {
@@ -112,7 +136,7 @@ export class PauseMenu extends Scene {
 
     // Ícones de Mudo (🔇) e Som (🔈) com texto "Mute" abaixo
     const muteX = panelX + 70;
-    const muteY = panelY + 40;
+    const muteY = panelY + 55;
 
     this.soundOnIcon = this.add
       .text(muteX, muteY, "🔈", {
