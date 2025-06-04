@@ -53,7 +53,7 @@ export class MainMenu extends Scene {
       // FADE OUT PARA A TRANSIÇÃO
       this.cameras.main.fadeOut(500);
       this.time.delayedCall(500, () => {
-        this.scene.start("Game");
+        this.scene.start("Game", { mapKey: 'map', health: 3 });
       });
     });
 

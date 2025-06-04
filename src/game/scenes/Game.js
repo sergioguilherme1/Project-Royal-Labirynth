@@ -114,10 +114,6 @@ export class Game extends Scene {
 
     create(data) {
         
-         if (this.menuMusic && this.menuMusic.isPlaying) {
-        this.menuMusic.stop(); // Parar a música do menu
-        }
-        
         const mapKey = data?.mapKey || 'map';
         const config = MAP_CONFIG[mapKey] || {};
         
@@ -272,18 +268,16 @@ export class Game extends Scene {
         this.isGameOver = false;
 
         this.createPauseGameButton();
-
-        // Adiciona a música de fundo para ser usada no controle de volume
-        this.menuMusic = this.sound.add('menuMusic', { loop: true, volume: 0.5 });
-        this.menuMusic.play();  // Começa a música de fundo
     }
 
     createPauseGameButton() {
-        const xBase = this.cameras.main.width - 40;
+        const xBase = this.cameras.main.width - 240;
         const yBase = 24;
 
         this.pauseGameButton = this.add.container(xBase, yBase);
 
+        const pauseBtnWidth = 22; 
+        const pauseBtnHeight = 22; 
         const pauseBtnBg = this.add.rectangle(0, 0, 40, 40, 0x1e1e2f) 
             .setStrokeStyle(3, 0xffd700)
             .setInteractive({ useHandCursor: true });

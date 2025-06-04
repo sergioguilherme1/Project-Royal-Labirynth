@@ -68,15 +68,15 @@ export class PauseMenu extends Scene {
       .setOrigin(0.5)
       .setDepth(2)
       .setInteractive({ useHandCursor: true });
-    this.returnBtn.on("pointerdown", () => {
+      this.returnBtn.on("pointerdown", () => {
       const gameScene = this.scene.get("Game");
-      if (gameScene.menuMusic && gameScene.menuMusic.isPlaying) {
+       if (gameScene.menuMusic && gameScene.menuMusic.isPlaying) {
         gameScene.menuMusic.stop(); // Parando a música do jogo antes de ir ao menu
       }
       this.scene.stop("Game");
-      this.scene.start("MainMenu");
-      this.scene.stop();
-    });
+      this.scene.start("MainMenu");  // Volta para o menu principal
+     this.scene.stop();
+      });
 
     // Ícone de Volume (🔉) com texto "Volume" abaixo
     const volumeX = panelX - 70;
