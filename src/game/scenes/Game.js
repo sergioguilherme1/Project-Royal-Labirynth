@@ -78,7 +78,6 @@ const MINIONS_CONFIG = {
     [ { x: 647, y: 104 }, { x: 520, y: 104 }, { x: 520, y: 215 }, { x: 520, y: 104 } ], 
     [ { x: 968, y: 375 }, { x: 743, y: 375 } ], 
     [ { x: 679, y: 728 }, { x: 936, y: 728 } ], 
-    
   ],
   map2: [
     [ { x: 104, y: 70 }, { x: 104, y: 340 } ], 
@@ -107,17 +106,27 @@ export class Game extends Scene {
   attackCooldown = 0;
 
   pauseGameButton;
+  menuMusic;
 
     constructor() {
         super('Game');
     }
 
     create(data) {
+
+        if (this.menuMusic && this.menuMusic.isPlaying) {
+           this.menuMusic.stop();
+        };
+        
         const mapKey = data?.mapKey || 'map';
         const config = MAP_CONFIG[mapKey] || {};
         
+        
         const map = this.make.tilemap({ key: mapKey });
         const tiledset = map.addTilesetImage('assets', 'tiles');
+
+        this.menuMusic = this.sound.add('menuMusic', { loop: true, volume: 0.5 });
+        this.menuMusic.play();
 
         map.createLayer('fundo preto', tiledset, 0, 0);
         map.createLayer('chao', tiledset, 0, 0);
@@ -204,7 +213,7 @@ export class Game extends Scene {
         const hudWidth = 200;
 
         // Canto superior direito
-        const baseX = cameraWidth - hudWidth;
+        const baseX = cameraWidth - hudWidth - 70;
 
         // Fundo da HUD
         const hudBg = this.add.graphics();
@@ -271,64 +280,68 @@ export class Game extends Scene {
             F: Phaser.Input.Keyboard.KeyCodes.F,
         });
 
-    const centerX = this.cameras.main.centerX;
-    const centerY = this.cameras.main.centerY;
-    this.gameOverText = this.add.text(centerX, centerY - 20, 'GAME OVER', {
-      fontSize: '48px', fill: '#ff0000', fontFamily: 'monospace'
-    }).setOrigin(0.5).setScrollFactor(0).setVisible(false);
-    this.restartText = this.add.text(centerX, centerY + 30, 'Pressione R para reiniciar', {
-      fontSize: '20px', fill: '#ffffff', fontFamily: 'monospace'
-    }).setOrigin(0.5).setScrollFactor(0).setVisible(false);
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY;
+        this.gameOverText = this.add.text(centerX, centerY - 20, 'GAME OVER', {
+            fontSize: '48px', fill: '#ff0000', fontFamily: 'monospace'
+        }).setOrigin(0.5).setScrollFactor(0).setVisible(false);
+        this.restartText = this.add.text(centerX, centerY + 30, 'Pressione R para reiniciar', {
+            fontSize: '20px', fill: '#ffffff', fontFamily: 'monospace'
+        }).setOrigin(0.5).setScrollFactor(0).setVisible(false);
 
-    this.isGameOver = false;
-  }
+        this.isGameOver = false;
 
-  createPauseGameButton() {
-    const xBase = this.cameras.main.width - 40;
-    const yBase = 24; // subido para alinhar melhor
-
-    this.pauseGameButton = this.add.container(xBase, yBase);
-
-    const pauseBtnBg = this.add.rectangle(0, 0, 40, 40, 0x1e1e2f) // tamanho menor
-      .setStrokeStyle(3, 0xffd700)
-      .setInteractive({ useHandCursor: true });
-    this.pauseGameButton.add(pauseBtnBg);
-
-    const pauseText = this.add.text(0, 0, "≡", {
-      fontSize: "24px", // tamanho da fonte menor
-      color: "#FFD700",
-      fontFamily: "Arial Black"
-    }).setOrigin(0.5);
-    this.pauseGameButton.add(pauseText);
-
-    pauseBtnBg.on("pointerover", () => {
-      pauseBtnBg.setFillStyle(0x294d77);
-      pauseText.setColor("#ffffff");
-    });
-
-    pauseBtnBg.on("pointerout", () => {
-      pauseBtnBg.setFillStyle(0x1e1e2f);
-      pauseText.setColor("#FFD700");
-    });
-
-    pauseBtnBg.on("pointerdown", () => {
-      this.scene.launch('PauseMenu');
-      this.scene.pause();
-    });
-  }
-
-  update() {
-    if (this.isGameOver && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
-      this.scene.restart({ mapKey: 'map' });
-      return;
+        this.createPauseGameButton();
     }
 
-    // Impede update se o jogo já acabou
-    if (this.isGameOver || !this.player || !this.player.active) {
-      return;
+    createPauseGameButton() {
+        const xBase = this.cameras.main.width - 40;
+        const yBase = 24;
+
+        this.pauseGameButton = this.add.container(xBase, yBase);
+
+        const pauseBtnWidth = 22; 
+        const pauseBtnHeight = 22; 
+        const pauseBtnBg = this.add.rectangle(0, 0, 40, 40, 0x1e1e2f) 
+            .setStrokeStyle(3, 0xffd700)
+            .setInteractive({ useHandCursor: true });
+        this.pauseGameButton.add(pauseBtnBg);
+
+        const pauseText = this.add.text(0, 0, "≡", {
+            fontSize: "24px", 
+            color: "#FFD700",
+            fontFamily: "Arial Black"
+        }).setOrigin(0.5);
+        this.pauseGameButton.add(pauseText);
+
+        pauseBtnBg.on("pointerover", () => {
+            pauseBtnBg.setFillStyle(0x294d77);
+            pauseText.setColor("#ffffff");
+        });
+
+        pauseBtnBg.on("pointerout", () => {
+            pauseBtnBg.setFillStyle(0x1e1e2f);
+            pauseText.setColor("#FFD700");
+        });
+
+        pauseBtnBg.on("pointerdown", () => {
+            this.scene.launch('PauseMenu');
+            this.scene.pause();
+        });
     }
 
-    updatePlayer(this.player, this.cursors, this.keys);
+    update() {
+        if (this.isGameOver && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
+            this.scene.restart({ mapKey: 'map' });
+            return;
+        }
+
+        // Impede update se o jogo já acabou
+        if (this.isGameOver || !this.player || !this.player.active) {
+            return;
+        }
+
+        updatePlayer(this.player, this.cursors, this.keys);
 
     // Checar morte — redundante, mas seguro
     if (this.player.health <= 0 && !this.player.isDying) {
@@ -336,10 +349,10 @@ export class Game extends Scene {
       return;
     }
 
-    if (Phaser.Input.Keyboard.JustDown(this.keys.F)) {
-      this.attackEnemy();
+        if (Phaser.Input.Keyboard.JustDown(this.keys.F)) {
+            this.attackEnemy();
+        }
     }
-  }
 
   updateHearts() {
     // Verificar se `this.hearts` foi inicializado corretamente
@@ -403,11 +416,11 @@ export class Game extends Scene {
     this.restartText.setVisible(true);  // Exibe o texto para reiniciar
   }
 
-  collectCoin(player, coin) {
-    coin.disableBody(true, true);
-    this.coinCount++;
-    this.coinText.setText(this.coinCount);
-  }
+    collectCoin(player, coin) {
+        coin.disableBody(true, true);
+        this.coinCount++;
+        this.coinText.setText(this.coinCount);
+    }
 
     collectHeart(player, heart) {
         heart.disableBody(true, true);
@@ -431,11 +444,11 @@ export class Game extends Scene {
     console.log("Atacando inimigos...");  // Logando quando o ataque é feito
     this.attackCooldown = now + 500;
 
-    const range = 50;
-    this.minions.getChildren().forEach(minion => {
-      const dx = minion.x - this.player.x;
-      const dy = minion.y - this.player.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
+        const range = 50;
+        this.minions.getChildren().forEach(minion => {
+            const dx = minion.x - this.player.x;
+            const dy = minion.y - this.player.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
 
       if (distance <= range) {
         minion.health--;
