@@ -1,3 +1,5 @@
+// PauseMenu.js
+
 import { Scene } from "phaser";
 
 export class PauseMenu extends Scene {
@@ -14,7 +16,7 @@ export class PauseMenu extends Scene {
       .setInteractive();
 
     const panelWidth = 340;
-    const panelHeight = 300;
+    const panelHeight = 380;  // Aumentei a altura do painel para 380
     const panelX = width / 2;
     const panelY = height / 2;
 
@@ -39,7 +41,7 @@ export class PauseMenu extends Scene {
 
     // Botão Continuar
     this.continueBtn = this.add
-      .text(panelX, panelY - 100, "Continuar", {
+      .text(panelX, panelY - 120, "Continuar", {
         fontSize: "28px",
         fill: "#FFD700",
         fontFamily: "monospace",
@@ -58,7 +60,7 @@ export class PauseMenu extends Scene {
 
     // Botão Voltar ao Menu
     this.returnBtn = this.add
-      .text(panelX, panelY - 50, "Voltar ao Menu", {
+      .text(panelX, panelY - 70, "Voltar ao Menu", {
         fontSize: "28px",
         fill: "#FFD700",
         fontFamily: "monospace",
@@ -82,7 +84,7 @@ export class PauseMenu extends Scene {
 
     // Botão para reiniciar o jogo
     this.restartBtn = this.add
-      .text(panelX, panelY, "Reiniciar Jogo", {
+      .text(panelX, panelY - 20, "Reiniciar Jogo", {
         fontSize: "28px",
         fill: "#FFD700",
         fontFamily: "monospace",
@@ -103,11 +105,11 @@ export class PauseMenu extends Scene {
     });
 
     // Ícone de Volume (🔉) com texto "Volume" abaixo
-    const volumeX = panelX - 70;
+    const volumeX = panelX - 60; // Ajustei para centralizar
     const volumeY = panelY + 55;
 
     this.volumeIcon = this.add
-      .text(volumeX, volumeY, "🔉", {
+      .text(volumeX, volumeY - 10, "🔉", {
         fontSize: "36px",
         color: "#FFD700",
         fontFamily: "Arial Black",
@@ -123,7 +125,7 @@ export class PauseMenu extends Scene {
     });
 
     this.volumeLabel = this.add
-      .text(volumeX, volumeY + 40, "Volume", {
+      .text(volumeX, volumeY + 30, "Volume", {
         fontSize: "16px",
         color: "#FFD700",
         fontFamily: "Arial",
@@ -135,11 +137,11 @@ export class PauseMenu extends Scene {
       .setDepth(2);
 
     // Ícones de Mudo (🔇) e Som (🔈) com texto "Mute" abaixo
-    const muteX = panelX + 70;
+    const muteX = panelX + 60; // Ajustei para centralizar
     const muteY = panelY + 55;
 
     this.soundOnIcon = this.add
-      .text(muteX, muteY, "🔈", {
+      .text(muteX, muteY - 10, "🔈", {
         fontSize: "36px",
         color: "#FFD700",
         fontFamily: "Arial Black",
@@ -152,7 +154,7 @@ export class PauseMenu extends Scene {
       .setInteractive({ useHandCursor: true });
 
     this.soundOffIcon = this.add
-      .text(muteX, muteY, "🔇", {
+      .text(muteX, muteY - 10, "🔇", {
         fontSize: "36px",
         color: "#FFD700",
         fontFamily: "Arial Black",
@@ -167,7 +169,7 @@ export class PauseMenu extends Scene {
     this.soundOffIcon.setVisible(false);
 
     this.muteLabel = this.add
-      .text(muteX, muteY + 40, "Mute", {
+      .text(muteX, muteY + 30, "Mute", {
         fontSize: "16px",
         color: "#FFD700",
         fontFamily: "Arial",
@@ -192,12 +194,12 @@ export class PauseMenu extends Scene {
       this.soundOffIcon.setVisible(false);
     });
 
-    this.createVolumePanel(panelX, panelY + 110);
+    this.createVolumePanel(panelX, panelY + 140);  
   }
 
   createVolumePanel(x, y) {
     this.volumePanelBg = this.add
-      .rectangle(x - 70, y, 160, 50, 0x1e1e2f, 0.95)
+      .rectangle(x - 80, y, 160, 50, 0x1e1e2f, 0.95)
       .setStrokeStyle(3, 0xffd700)
       .setOrigin(0, 0.5)
       .setDepth(100)
@@ -205,7 +207,7 @@ export class PauseMenu extends Scene {
       .setInteractive();
 
     this.volumeTrack = this.add
-      .rectangle(x - 55, y, 120, 10, 0x555555)
+      .rectangle(x - 65, y, 128, 10, 0x555555)
       .setOrigin(0, 0.5)
       .setDepth(101)
       .setVisible(false);
@@ -214,7 +216,7 @@ export class PauseMenu extends Scene {
     const initialVolume = gameScene.menuMusic ? gameScene.menuMusic.volume : 0.5;
 
     this.volumeThumb = this.add
-      .rectangle(x - 55 + 120 * initialVolume, y, 16, 30, 0xffd700)
+      .rectangle(x - 60 + 120  * initialVolume, y, 16, 30, 0xffd700)
       .setOrigin(0.5)
       .setDepth(102)
       .setVisible(false)
