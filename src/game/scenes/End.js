@@ -1,10 +1,10 @@
 import { Scene } from 'phaser';
 
-export class GameOver extends Scene
+export class End extends Scene
 {
     constructor ()
     {
-        super('GameOver');
+        super('End');
     }
 
     create ()

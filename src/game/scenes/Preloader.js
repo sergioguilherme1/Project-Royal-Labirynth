@@ -1,7 +1,7 @@
 import { Scene } from 'phaser';
 import { loadSprites } from '../objects/player';
 import { loadMinionSprites } from '../objects/minion';
-import { loadBossSprites, loadBossAtackSprites, loadBossMortSprites} from '../objects/boss';
+import { loadBossSprites, loadBossAtackSprites, loadBossDeathSprites} from '../objects/boss';
 import { loadPrincessSprites } from '../objects/princess';
 
 export class Preloader extends Scene {
@@ -51,6 +51,8 @@ export class Preloader extends Scene {
         loadBossSprites(this);
        // Boss Atack
        loadBossAtackSprites(this);
+       //Boss morte
+       loadBossDeathSprites(this);
         //Princesa
        loadPrincessSprites(this);
     }

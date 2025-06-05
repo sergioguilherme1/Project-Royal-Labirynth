@@ -159,13 +159,20 @@ export class Game extends Scene {
       this.boss.currentPatrolIndex = 1;
 
       this.physics.add.collider(this.boss, parede);
-      this.physics.add.collider(this.boss, this.player, () => {
+      this.physics.add.collider(this.boss, this.player);
 
+      this.Princess = createPrincess(this, 511, 384); 
+      this.physics.add.collider(this.Princess, this.boss, () => {
+        this.Princess.setVelocity(0);
       });
-
-      const princessX = 511;  // Posicionamento da princesa
-      const princessY = 384;
-      this.princess = createPrincess(this, princessX, princessY);
+      this.physics.add.collider(this.Princess, this.player, () => {
+        this.Princess.setVelocity(0);
+          if (this.bossIsDead) {
+            // Se o Boss estiver morto, muda para a cena "end"
+            this.scene.start('end');  // Nome da cena para transição
+          }
+      });
+      
     }
 
 
@@ -257,7 +264,6 @@ export class Game extends Scene {
     this.physics.add.collider(this.minions, this.player);
     this.physics.add.collider(this.minions, this.player, () => {
       if (!this.player.isDying) {  // Verifica se o jogador não está morrendo
-        console.log(`Vida do jogador antes do dano: ${this.player.health}`);
         this.player.health--;  // Diminui a vida do jogador
         this.updateHearts();    // Atualiza os corações na tela
 
@@ -463,8 +469,6 @@ export class Game extends Scene {
       if (distance <= range) {
         minion.health--;
         this.sound.play('orcHit');
-
-        console.log("Minion atingido, vida:", minion.health);  // Logando a vida do minion
         if (minion.health <= 0) {
           minion.die();
         } else {
@@ -472,5 +476,17 @@ export class Game extends Scene {
         }
       }
     });
+
+    if (this.boss) {
+      const dx = this.boss.x - this.player.x;
+      const dy = this.boss.y - this.player.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance <= range) {
+        this.boss.takeDamage(1); // Aplica dano ao boss
+        //this.sound.play('dragonHit');
+        console.log("Dano no Boss!");
+      }
+    }
   }
 }

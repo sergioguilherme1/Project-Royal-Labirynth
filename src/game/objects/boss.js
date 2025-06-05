@@ -11,11 +11,13 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     this.target = target;
 
     this.setScale(1.2);
-    this.setSize(48, 48);
-    this.setOffset(25, 25);
+    this.setSize(45, 20);
+    this.setOffset(25, 42);
     this.setCollideWorldBounds(true);
     this.body.setImmovable(false);
+    this.setDepth(15);
 
+    this.maxHealth = 10;
     this.health = 10;
     this.alive = true;
 
@@ -31,11 +33,13 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     this.isAttacking = false;
 
     this.attackCooldown = 0;
-    this.attackRange = 50;
+    this.attackRange = 40;
     this.attackRate = 2500;
 
     this.play('boss_walk_down');
-    
+
+    this.healthBar = scene.add.graphics();
+    this.updateHealthBar();
   }
 
   preUpdate(time, delta) {
@@ -43,16 +47,14 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
 
     if (!this.active || !this.target?.active || !this.alive) return;
 
+    this.updateHealthBar();
+
     const dx = this.target.x - this.x;
     const dy = this.target.y - this.y;
     const distance = Phaser.Math.Distance.Between(this.x, this.y, this.target.x, this.target.y);
-    const detectionRange = 40;
+    const detectionRange = 200;
 
     if (distance <= detectionRange) {
-      this.isAttacking = true;
-    }
-
-    if (this.isAttacking) {
       if (distance <= this.attackRange) {
         this.setVelocity(0);
         if (time > this.attackCooldown) {
@@ -62,18 +64,22 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
 
           this.scene.sound.play('dragonAttack');
 
-
-          if (this.target.health && this.target.health > 0) {
-            this.target.health--;
-            this.scene.updateHearts();
-            if (this.target.health <= 0) {
-              this.target.setVelocity(0);
-              this.target.play('player_die');
-              this.target.once('animationcomplete', () => {
-                this.scene.handleGameOver();
-              });
+          this.once('animationcomplete', (anim) => {
+            if (anim.key === `boss_attack_${direction}`) {
+              // Apenas aplica o dano após a animação terminar
+              if (this.target.health && this.target.health > 0) {
+                this.target.health--;
+                this.scene.updateHearts();
+                if (this.target.health <= 0) {
+                  this.target.setVelocity(0);
+                  this.target.play('player_die');
+                  this.target.once('animationcomplete', () => {
+                    this.scene.handleGameOver();
+                  });
+                }
+              }
             }
-          }
+          });
         }
       } else {
         this.speed = this.attackingSpeed;
@@ -118,10 +124,38 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     return 'down';
   }
 
+updateHealthBar() {
+    const barWidth = 50;
+    const barHeight = 4;
+    const offsetY = -40;
+    this.setDepth(20);
+
+    this.healthBar.clear();
+    this.healthBar.fillStyle(0x000000); 
+    this.healthBar.fillRect(this.x - barWidth / 2 - 1, this.y + offsetY - 1, barWidth + 2, barHeight + 2);
+
+    const healthRatio = this.health / this.maxHealth;
+    this.healthBar.fillStyle(0xff0000);
+    this.healthBar.fillRect(this.x - barWidth / 2, this.y + offsetY, barWidth * healthRatio, barHeight);
+}
+
+takeDamage(amount) {
+  if (this.alive) {
+    this.health -= amount;
+    this.updateHealthBar(); // Atualiza a barra de vida
+    if (this.health <= 0) {
+      this.die(); // Chama a função de morte caso a vida chegue a zero
+    }
+  }
+}
+
   die() {
     this.alive = false;
     this.setVelocity(0);
-    this.play('boss_death');
+    this.play('boss_die');
+
+    this.scene.bossIsDead = true;
+    
     this.once('animationcomplete', () => {
       const anim = this.anims.currentAnim;
       if (anim) {
@@ -148,7 +182,7 @@ export const loadBossAtackSprites = (scene) => {
     spacing: 0
   });
 };
-export const loadBossMortSprites = (scene) => {
+export const loadBossDeathSprites = (scene) => {
   scene.load.spritesheet('boss_death', 'characters/Boss_death.png', {
     frameWidth: 96,
     frameHeight: 96,
@@ -162,61 +196,61 @@ export const createBossAnimations = (scene) => {
   scene.anims.create({
     key: 'boss_walk_down',
     frames: scene.anims.generateFrameNumbers('boss', { start: 18, end: 23 }),
-    frameRate: 6,
+    frameRate: 8,
     repeat: -1
   });
 
   scene.anims.create({
     key: 'boss_walk_left',
     frames: scene.anims.generateFrameNumbers('boss', { start: 12, end: 17 }),
-    frameRate: 6,
+    frameRate: 8,
     repeat: -1
   });
 
   scene.anims.create({
     key: 'boss_walk_right',
     frames: scene.anims.generateFrameNumbers('boss', { start: 0, end: 5 }),
-    frameRate: 6,
+    frameRate: 8,
     repeat: -1
   });
 
   scene.anims.create({
     key: 'boss_walk_up',
     frames: scene.anims.generateFrameNumbers('boss', { start: 6, end: 11 }),
-    frameRate: 6,
+    frameRate: 8,
     repeat: -1
   });
 
   scene.anims.create({
     key: 'boss_attack_down',
     frames: scene.anims.generateFrameNumbers('boss_Atack', { start: 48, end: 63 }),
-    frameRate: 10,
+    frameRate: 12,
     repeat: 0
   });
 
   scene.anims.create({
     key: 'boss_attack_left',
     frames: scene.anims.generateFrameNumbers('boss_Atack', { start: 32, end: 47 }),
-    frameRate: 10,
+    frameRate: 12,
     repeat: 0
   });
 
   scene.anims.create({
     key: 'boss_attack_right',
     frames: scene.anims.generateFrameNumbers('boss_Atack', { start: 0, end: 15 }),
-    frameRate: 10,
+    frameRate: 12,
     repeat: 0
   });
 
   scene.anims.create({
     key: 'boss_attack_up',
     frames: scene.anims.generateFrameNumbers('boss_Atack', { start: 16, end: 31 }),
-    frameRate: 10,
+    frameRate: 12,
     repeat: 0
   });
 
  scene.anims.create({
-    key: 'boss_death',
+    key: 'boss_die',
     frames: scene.anims.generateFrameNumbers('boss_death', { start: 0, end: 8 }),
     frameRate: 10,
     repeat: 0

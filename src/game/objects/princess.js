@@ -7,10 +7,9 @@ export const createPrincess = (scene, x, y) => {
   princess.setSize(11, 10);
   princess.setOffset(18, 22);
   princess.setDepth(5);
+  princess.body.setImmovable(true); 
 
-  princess.anims.play('arm_up');
-
-  createAnimations(scene);
+  princess.anims.play('arm_up', true);
   return princess;
 };
 
@@ -25,13 +24,6 @@ export const loadPrincessSprites = (scene) => {
 
 // Criação de animações
 export const createAnimations = (scene) => {
-  // Andar
-  scene.anims.create({
-    key: 'idle',
-    frames: [ { key: 'princess', frame: 1 } ],
-    frameRate: 8,
-    repeat: 0
-  });
   scene.anims.create({ 
     key: 'arm_up', 
     frames: scene.anims.generateFrameNumbers('princess', { start: 3, end: 5 }), 

@@ -47,13 +47,9 @@ export default class Minion extends Phaser.Physics.Arcade.Sprite {
     const dx = this.target.x - this.x;
     const dy = this.target.y - this.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    const detectionRange = 60;
+    const detectionRange = 180;
 
-    if (distance <= detectionRange) {
-      this.isAttacking = true;
-    }
-
-    if (this.isAttacking) {
+    if (distance <= detectionRange){
       if (distance <= this.attackRange) {
         this.setVelocity(0);
 
@@ -151,7 +147,7 @@ export default class Minion extends Phaser.Physics.Arcade.Sprite {
 
     this.healthBar.clear();
     this.healthBar.fillStyle(0x000000); 
-    this.healthBar.fillRect(this.x - barWidth / 2, this.y + offsetY, barWidth, barHeight);
+    this.healthBar.fillRect(this.x - barWidth / 2 - 1, this.y + offsetY - 1, barWidth + 2, barHeight + 2);
 
     const healthRatio = this.health / this.maxHealth;
     this.healthBar.fillStyle(0xff0000);
