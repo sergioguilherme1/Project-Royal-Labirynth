@@ -2,6 +2,7 @@ import { Scene } from 'phaser';
 import { loadSprites } from '../objects/player';
 import { loadMinionSprites } from '../objects/minion';
 import { loadBossSprites, loadBossAtackSprites, loadBossMortSprites} from '../objects/boss';
+import { loadPrincessSprites } from '../objects/princess';
 
 export class Preloader extends Scene {
     constructor() {
@@ -50,6 +51,8 @@ export class Preloader extends Scene {
         loadBossSprites(this);
        // Boss Atack
        loadBossAtackSprites(this);
+        //Princesa
+       loadPrincessSprites(this);
     }
 
     create() {

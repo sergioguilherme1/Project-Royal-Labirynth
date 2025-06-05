@@ -3,6 +3,7 @@ import { createPlayer } from '../objects/player';
 import { updatePlayer } from '../objects/player';
 import Minion, { createMinionAnimations } from '../objects/minion';
 import Boss, { createBossAnimations } from '../objects/boss';
+import Princess, {createPrincess } from '../objects/princess'; 
 
 const MAP_CONFIG = {
   map: {
@@ -104,7 +105,6 @@ export class Game extends Scene {
   coinCount = 0;
   coinText;
   attackCooldown = 0;
-
   pauseGameButton;
   menuMusic;
 
@@ -162,7 +162,12 @@ export class Game extends Scene {
       this.physics.add.collider(this.boss, this.player, () => {
 
       });
+
+      const princessX = 511;  // Posicionamento da princesa
+      const princessY = 384;
+      this.princess = createPrincess(this, princessX, princessY);
     }
+
 
     //Criando lacaios
     createMinionAnimations(this);

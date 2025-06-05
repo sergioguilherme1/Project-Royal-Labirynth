@@ -112,7 +112,7 @@ export const createAnimations = (scene) => {
 
 // Atualiza o jogador conforme teclas
 export const updatePlayer = (player, cursors, keys) => {
-  const speed = 80;
+  const speed = 300;
 
   if (player.anims.currentAnim?.key?.startsWith('attack') && player.anims.isPlaying) return;
 
