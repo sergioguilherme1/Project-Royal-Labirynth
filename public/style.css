@@ -14,5 +14,7 @@ body {
     align-items: center;
 }
 
-
-
+@font-face {
+  font-family: 'PixelFont';
+  src: url('assets/fonts/PressStart2P-Regular.ttf') format('truetype');
+}

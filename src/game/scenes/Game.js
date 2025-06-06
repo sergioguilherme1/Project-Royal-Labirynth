@@ -118,7 +118,8 @@ export class Game extends Scene {
       this.menuMusic.stop();
     };
 
-    const mapKey = data?.mapKey || 'map';
+    //const mapKey = data?.mapKey || 'map';
+    const mapKey = 'map3';
     const config = MAP_CONFIG[mapKey] || {};
 
 
@@ -169,7 +170,7 @@ export class Game extends Scene {
         this.Princess.setVelocity(0);
           if (this.bossIsDead) {
             // Se o Boss estiver morto, muda para a cena "end"
-            this.scene.start('end');  // Nome da cena para transição
+            this.scene.start('End');  // Nome da cena para transição
           }
       });
       

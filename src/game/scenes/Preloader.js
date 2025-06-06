@@ -43,6 +43,9 @@ export class Preloader extends Scene {
         this.load.image('coin_icon', 'ui/coin.png'); // moedas do mapa
         this.load.image('heart_item', 'items/heart_full.png'); // Corações do mapa
 
+        //tela final
+        this.load.image('fim', 'fim.png');
+
         // Lacaios (minions)
         loadMinionSprites(this);
         // Jogador
