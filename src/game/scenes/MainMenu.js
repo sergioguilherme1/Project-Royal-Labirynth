@@ -14,6 +14,10 @@ export class MainMenu extends Scene {
     this.add.image(514, 282, "logo").setTint(0x000000).setAlpha(0.4);
     this.logo = this.add.image(512, 280, "logo").setTint(0xeeeeff);
 
+    // Música de fundo original
+    this.menuMusic = this.sound.add("menuMusic", { loop: true, volume: 0.3 });
+    this.menuMusic.play();
+
     // Botão iniciar com animação e som
     const buttonBg = this.add.rectangle(0, 0, 200, 60, 0x1e1e2f)
       .setStrokeStyle(3, 0xffd700)
@@ -71,10 +75,6 @@ export class MainMenu extends Scene {
       font: "14px Arial",
       fill: "#555",
     }).setOrigin(1, 0);  // alinhado à direita e topo
-
-    // Música de fundo original
-    this.menuMusic = this.sound.add("menuMusic", { loop: true, volume: 0.5 });
-    this.menuMusic.play();
 
     // Cria modal de ajuda antes dos botões
     this.createHelpModal();
@@ -148,7 +148,7 @@ export class MainMenu extends Scene {
     });
 
     instagramButtonBg.on("pointerdown", () => {
-      window.open("https://www.instagram.com/royallabyrinth?igsh=MW95OXBrd2dybXEzbA==", "_blank");
+      window.open("https://www.instagram.com/royallabyrinth", "_blank");
     });
   }
 
@@ -309,6 +309,8 @@ export class MainMenu extends Scene {
       .setVisible(false)
       .setInteractive({ draggable: true, useHandCursor: true });
 
+      
+
     this.input.setDraggable(this.volumeThumb);
     this.volumeThumb.on('drag', (pointer, dragX) => {
       const minX = centerX + 10;
@@ -316,6 +318,7 @@ export class MainMenu extends Scene {
       const newX = Phaser.Math.Clamp(dragX, minX, maxX);
       this.volumeThumb.x = newX;
       const volume = (newX - minX) / 120;
+      this.savedVolume = volume;
       this.menuMusic.setVolume(volume);
     });
 

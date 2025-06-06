@@ -70,8 +70,8 @@ export class PauseMenu extends Scene {
       .setInteractive({ useHandCursor: true });
       this.returnBtn.on("pointerdown", () => {
       const gameScene = this.scene.get("Game");
-       if (gameScene.menuMusic && gameScene.menuMusic.isPlaying) {
-        gameScene.menuMusic.stop(); // Parando a música do jogo antes de ir ao menu
+       if (gameScene.gameMusic && gameScene.gameMusic.isPlaying) {
+        gameScene.gameMusic.stop(); // Parando a música do jogo antes de ir ao menu
       }
       this.scene.stop("Game");
       this.scene.start("MainMenu");  // Volta para o menu principal
@@ -156,14 +156,14 @@ export class PauseMenu extends Scene {
 
     this.soundOnIcon.on("pointerdown", () => {
       const gameScene = this.scene.get("Game");
-      gameScene.menuMusic.setMute(true);
+      gameScene.gameMusic.setMute(true);
       this.soundOnIcon.setVisible(false);
       this.soundOffIcon.setVisible(true);
     });
 
     this.soundOffIcon.on("pointerdown", () => {
       const gameScene = this.scene.get("Game");
-      gameScene.menuMusic.setMute(false);
+      gameScene.gameMusic.setMute(false);
       this.soundOnIcon.setVisible(true);
       this.soundOffIcon.setVisible(false);
     });
@@ -187,7 +187,7 @@ export class PauseMenu extends Scene {
       .setVisible(false);
 
     const gameScene = this.scene.get("Game");
-    const initialVolume = gameScene.menuMusic ? gameScene.menuMusic.volume : 0.5;
+    const initialVolume = gameScene.gameMusic ? gameScene.gameMusic.volume : 0.5;
 
     this.volumeThumb = this.add
       .rectangle(x - 55 + 120 * initialVolume, y, 16, 30, 0xffd700)
@@ -205,7 +205,7 @@ export class PauseMenu extends Scene {
       this.volumeThumb.x = newX;
       const volume = (newX - minX) / this.volumeTrack.width;
 
-      gameScene.menuMusic.setVolume(volume);
+      gameScene.gameMusic.setVolume(volume);
     });
 
     this.volumePanelElements = [

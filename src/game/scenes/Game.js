@@ -107,6 +107,20 @@ export class Game extends Scene {
   attackCooldown = 0;
   pauseGameButton;
   menuMusic;
+  gameMusic;
+  isGameOver = false;
+  fogOfWar;
+  visionMask;
+  Graphics;
+  dragonSound;
+  fireSound;
+  coinSound;
+  heartSound;
+  gameOverText;
+  restartText;
+  cursors;
+  keys;
+  restartKey;
 
   constructor() {
     super('Game');
@@ -118,15 +132,12 @@ export class Game extends Scene {
       this.menuMusic.stop();
     };
 
-    const mapKey = data?.mapKey || 'map';
+    //const mapKey = data?.mapKey || 'map';
+    const mapKey = 'map3';
     const config = MAP_CONFIG[mapKey] || {};
-
 
     const map = this.make.tilemap({ key: mapKey });
     const tiledset = map.addTilesetImage('assets', 'tiles');
-
-    this.menuMusic = this.sound.add('menuMusic', { loop: true, volume: 0.5 });
-    this.menuMusic.play();
 
     map.createLayer('fundo preto', tiledset, 0, 0);
     map.createLayer('chao', tiledset, 0, 0);
@@ -139,6 +150,14 @@ export class Game extends Scene {
     const objetos = map.createLayer('objetos', tiledset, 0, 0);
     objetos.setCollisionByProperty({ collides: true });
 
+
+    const mainMenuScene = this.scene.get('MainMenu');
+    if (mainMenuScene) {
+      this.savedVolume = mainMenuScene.savedVolume; // Recupera o volume
+    }
+    this.gameMusic = this.sound.add("gameMusic", { loop: true, volume: this.savedVolume });
+    this.gameMusic.play();
+
     // Player
     const spawn = config.spawn || { x: 0, y: 0 };
     this.player = createPlayer(this, spawn.x, spawn.y);
@@ -147,6 +166,12 @@ export class Game extends Scene {
 
     //Boss
     if (mapKey === 'map3') {
+      this.gameMusic.setVolume(0.1); // Diminui música de fundo
+      this.dragonSound = this.sound.add("dragon-sound", { loop: true, volume: 0.8 });
+      this.dragonSound.play();
+      this.fireSound = this.sound.add("fire-sound", { loop: true, volume: 0.6 });
+      this.fireSound.play();
+
       createBossAnimations(this);
       const bossPatrol = [
         { x: 511, y: 295 },
@@ -165,6 +190,9 @@ export class Game extends Scene {
       this.physics.add.collider(this.Princess, this.boss, () => {
         this.Princess.setVelocity(0);
       });
+
+      
+
       this.physics.add.collider(this.Princess, this.player, () => {
         this.Princess.setVelocity(0);
           if (this.bossIsDead) {
@@ -175,6 +203,31 @@ export class Game extends Scene {
       
     }
 
+    // --- Lógica do Fog of War ---Add commentMore actions
+    // Cria a camada preta opaca que cobre o mapa
+    this.fogOfWar = this.add.graphics()
+      .fillStyle(0x000000, 0.98) // Cor preta com 95% de opacidade
+      .fillRect(0, 0, this.cameras.main.width, this.cameras.main.height)
+      .setScrollFactor(0) // Fixa na câmera
+      .setDepth(99);
+    this.fogOfWar.alpha = 0; 
+
+    // Cria o gráfico que define a área visível do jogador (a "janela" no fog)
+    this.visionMaskGraphics = this.add.graphics()
+      .fillCircle(this.player.x, this.player.y, 80) // Círculo de visão em torno do jogador
+      .setScrollFactor(0); // Fixa na câmera
+    this.visionMaskGraphics.alpha = 0;
+
+    // Aplica a máscara invertida: a área do círculo será transparente, o resto opaco
+    this.fogOfWar.mask = new Phaser.Display.Masks.GeometryMask(this, this.visionMaskGraphics);
+    this.fogOfWar.mask.invertAlpha = true;
+
+    this.tweens.add({
+      targets: this.fogOfWar,
+      alpha: 0.99,  // A neblina fica visível
+      duration: 2000,  // Duração do efeito (3 segundos)
+      ease: 'Linear'
+    });
 
     //Criando lacaios
     createMinionAnimations(this);
@@ -190,7 +243,6 @@ export class Game extends Scene {
     });
 
     this.restartKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
-    this.player.health = data?.health ?? 3;
 
     // Layer de fim de fase
     const fim = map.createLayer('fim', tiledset, 0, 0);
@@ -223,9 +275,14 @@ export class Game extends Scene {
     const cameraWidth = this.cameras.main.width;
     const topY = 5;
     const hudWidth = 250;
-
     // Canto superior direito
     const baseX = cameraWidth - hudWidth - 70;
+
+    this.add.graphics()
+      .fillStyle(0x000000, 0.5)
+      .fillRoundedRect(baseX, topY, hudWidth, 32, 8)
+      .setScrollFactor(0)
+      .setDepth(100); 
 
     // Fundo da HUD
     const hudBg = this.add.graphics();
@@ -238,7 +295,8 @@ export class Game extends Scene {
       const heartX = baseX + 16 + i * 32;
       const heart = this.add.image(heartX, topY + 16, i < this.player.health ? 'heart_full' : 'heart_empty')
         .setScrollFactor(0)
-        .setScale(0.05);
+        .setScale(0.05)
+        .setDepth(100);
       this.hearts.push(heart);
     }
 
@@ -248,12 +306,15 @@ export class Game extends Scene {
     const coinIconX = baseX + hudWidth - 70;
     this.add.image(coinIconX, topY + 16, 'coin_icon')
       .setScrollFactor(0)
-      .setScale(0.05);
+      .setScale(0.05)
+      .setDepth(100);
     this.coinText = this.add.text(coinIconX + 20, topY + 8, '', {
       fontSize: '16px',
       fill: '#fff',
       fontFamily: 'monospace'
-    }).setScrollFactor(0);
+    })
+      .setScrollFactor(0)
+      .setDepth(100);
 
     this.coinText.setText(this.coinCount.toString());
 
@@ -293,12 +354,24 @@ export class Game extends Scene {
 
     const centerX = this.cameras.main.centerX;
     const centerY = this.cameras.main.centerY;
-    this.gameOverText = this.add.text(centerX, centerY - 20, 'GAME OVER', {
-      fontSize: '48px', fill: '#ff0000', fontFamily: 'monospace'
-    }).setOrigin(0.5).setScrollFactor(0).setVisible(false);
-    this.restartText = this.add.text(centerX, centerY + 30, 'Pressione R para reiniciar', {
-      fontSize: '20px', fill: '#ffffff', fontFamily: 'monospace'
-    }).setOrigin(0.5).setScrollFactor(0).setVisible(false);
+    this.gameOverText = this.add.text(centerX, centerY - 20, "GAME OVER", {
+      fontSize: "48px",
+      fill: "#ff0000",
+      fontFamily: "monospace",
+    })
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setDepth(100) 
+      .setVisible(false);
+    this.restartText = this.add.text(centerX, centerY + 30, "Pressione R para reiniciar", {
+      fontSize: "20px",
+      fill: "#ffffff",
+      fontFamily: "monospace",
+    })
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setDepth(100) 
+      .setVisible(false);
 
     this.isGameOver = false;
 
@@ -322,7 +395,9 @@ export class Game extends Scene {
       fontSize: "24px",
       color: "#FFD700",
       fontFamily: "Arial Black"
-    }).setOrigin(0.5);
+    })
+      .setOrigin(0.5)
+      .setDepth(101);
     this.pauseGameButton.add(pauseText);
 
     pauseBtnBg.on("pointerover", () => {
@@ -353,6 +428,8 @@ export class Game extends Scene {
     }
 
     updatePlayer(this.player, this.cursors, this.keys);
+    this.visionMaskGraphics.clear();
+    this.visionMaskGraphics.fillCircle(this.player.x, this.player.y, 70);
 
     // Checar morte — redundante, mas seguro
     if (this.player.health <= 0 && !this.player.isDying) {
@@ -436,6 +513,9 @@ export class Game extends Scene {
     coin.disableBody(true, true);
     this.coinCount++;
     this.coinText.setText(this.coinCount);
+    this.coinSound = this.sound.add('coinSound');
+    this.coinSound.play();
+    this.coinSound.setVolume(0.4);
   }
 
   collectHeart(player, heart) {
@@ -451,6 +531,10 @@ export class Game extends Scene {
       this.player.health++;
       this.updateHearts();
     }
+
+    this.heartSound = this.sound.add('heartSound');
+    this.heartSound.play();
+    this.heartSound.setVolume(0.4);
   }
 
   attackEnemy() {
@@ -460,7 +544,7 @@ export class Game extends Scene {
     console.log("Atacando inimigos...");  // Logando quando o ataque é feito
     this.attackCooldown = now + 500;
 
-    const range = 50;
+    const range = 60;
     this.minions.getChildren().forEach(minion => {
       const dx = minion.x - this.player.x;
       const dy = minion.y - this.player.y;
@@ -488,5 +572,14 @@ export class Game extends Scene {
         console.log("Dano no Boss!");
       }
     }
+  }
+
+  removeFog() {
+    this.tweens.add({
+      targets: this.fogOfWar,
+      alpha: 0, 
+      duration: 1500,  
+      ease: 'Linear'
+    });
   }
 }

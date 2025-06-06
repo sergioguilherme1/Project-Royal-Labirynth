@@ -52,7 +52,7 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     const dx = this.target.x - this.x;
     const dy = this.target.y - this.y;
     const distance = Phaser.Math.Distance.Between(this.x, this.y, this.target.x, this.target.y);
-    const detectionRange = 200;
+    const detectionRange = 150;
 
     if (distance <= detectionRange) {
       if (distance <= this.attackRange) {
