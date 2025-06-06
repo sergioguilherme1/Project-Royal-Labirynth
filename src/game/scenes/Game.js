@@ -118,8 +118,7 @@ export class Game extends Scene {
       this.menuMusic.stop();
     };
 
-    //const mapKey = data?.mapKey || 'map';
-    const mapKey = 'map3';
+    const mapKey = data?.mapKey || 'map';
     const config = MAP_CONFIG[mapKey] || {};
 
 
