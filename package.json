@@ -4,9 +4,9 @@
     "main": "src/main.js",
     "scripts": {
         "dev": "node log.js dev & webpack-dev-server --config webpack/config.js --open",
-        "build": "node log.js build & webpack --config webpack/config.prod.js",
+        "build": "node log.js build & webpack --config webpack/config.js",
         "dev-nolog": "webpack-dev-server --config webpack/config.js --open",
-        "build-nolog": "webpack --config webpack/config.prod.js"
+        "build-nolog": "webpack --config webpack/config.js"
     },
     "repository": {
         "type": "git",
