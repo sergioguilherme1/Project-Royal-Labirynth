@@ -132,8 +132,7 @@ export class Game extends Scene {
       this.gameMusic.stop();
     };
 
-    //const mapKey = data?.mapKey || 'map';
-    const mapKey = 'map3';
+    const mapKey = data?.mapKey || 'map';
     const config = MAP_CONFIG[mapKey] || {};
 
     const map = this.make.tilemap({ key: mapKey });
