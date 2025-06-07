@@ -128,12 +128,11 @@ export class Game extends Scene {
 
   create(data) {
 
-    if (this.menuMusic && this.menuMusic.isPlaying) {
-      this.menuMusic.stop();
+    if (this.gameMusic && this.gameMusic.isPlaying) {
+      this.gameMusic.stop();
     };
 
-    //const mapKey = data?.mapKey || 'map';
-    const mapKey = 'map3';
+    const mapKey = data?.mapKey || 'map';
     const config = MAP_CONFIG[mapKey] || {};
 
     const map = this.make.tilemap({ key: mapKey });
@@ -155,7 +154,7 @@ export class Game extends Scene {
     if (mainMenuScene) {
       this.savedVolume = mainMenuScene.savedVolume; // Recupera o volume
     }
-    this.gameMusic = this.sound.add("gameMusic", { loop: true, volume: this.savedVolume });
+    this.gameMusic = this.sound.add("gameMusic", { loop: true, volume: this.savedVolume || 0.5 });
     this.gameMusic.play();
 
     // Player
@@ -166,7 +165,7 @@ export class Game extends Scene {
 
     //Boss
     if (mapKey === 'map3') {
-      this.gameMusic.setVolume(0.1); // Diminui música de fundo
+      this.gameMusic.setVolume(this.savedVolume); // Diminui música de fundo
       this.dragonSound = this.sound.add("dragon-sound", { loop: true, volume: 0.8 });
       this.dragonSound.play();
       this.fireSound = this.sound.add("fire-sound", { loop: true, volume: 0.6 });
@@ -332,7 +331,13 @@ export class Game extends Scene {
           this.checkPlayerDeath();  // Lógica de morte do jogador
         }
 
-        console.log(`Vida do jogador depois do dano: ${this.player.health}`);
+        if (this.player.isDying) {
+          this.minions.getChildren().forEach(minion => {
+            if (minion.anims && minion.anims.isPlaying) {
+              minion.anims.stop();  // Para a animação do minion
+            }
+          });
+        }
       }
     });
 
@@ -357,7 +362,7 @@ export class Game extends Scene {
     this.gameOverText = this.add.text(centerX, centerY - 20, "GAME OVER", {
       fontSize: "48px",
       fill: "#ff0000",
-      fontFamily: "monospace",
+      fontFamily: "PixelFont",
     })
       .setOrigin(0.5)
       .setScrollFactor(0)
@@ -366,7 +371,7 @@ export class Game extends Scene {
     this.restartText = this.add.text(centerX, centerY + 30, "Pressione R para reiniciar", {
       fontSize: "20px",
       fill: "#ffffff",
-      fontFamily: "monospace",
+      fontFamily: "PixelFont",
     })
       .setOrigin(0.5)
       .setScrollFactor(0)
@@ -381,8 +386,9 @@ export class Game extends Scene {
   createPauseGameButton() {
     const xBase = this.cameras.main.width - 40;
     const yBase = 24;
+    
 
-    this.pauseGameButton = this.add.container(xBase, yBase);
+    this.pauseGameButton = this.add.container(xBase, yBase).setDepth(200);
 
     const pauseBtnWidth = 22;
     const pauseBtnHeight = 22;
@@ -397,7 +403,6 @@ export class Game extends Scene {
       fontFamily: "Arial Black"
     })
       .setOrigin(0.5)
-      .setDepth(101);
     this.pauseGameButton.add(pauseText);
 
     pauseBtnBg.on("pointerover", () => {
@@ -484,6 +489,10 @@ export class Game extends Scene {
     this.player.setVelocity(0);  // Para o movimento do jogador
     this.physics.pause();  // Pausa a física do jogo
 
+    if (this.gameMusic) {
+      this.gameMusic.stop();
+    }
+
     this.player.isDying = true;  // Marca que o jogador está morrendo
     this.player.anims.stop();    // Para qualquer animação do jogador
     this.player.play('die_down'); // Inicia a animação de morte
@@ -500,7 +509,6 @@ export class Game extends Scene {
   }
 
   handleGameOver() {
-    console.log("Game Over!");
 
     // Exibe o texto de Game Over imediatamente
     this.gameOverText.setVisible(true);
