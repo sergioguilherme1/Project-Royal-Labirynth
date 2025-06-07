@@ -14,7 +14,7 @@ export class PauseMenu extends Scene {
       .setInteractive();
 
     const panelWidth = 340;
-    const panelHeight = 300;
+    const panelHeight = 360;
     const panelX = width / 2;
     const panelY = height / 2;
 
@@ -68,29 +68,48 @@ export class PauseMenu extends Scene {
       .setOrigin(0.5)
       .setDepth(2)
       .setInteractive({ useHandCursor: true });
-      this.returnBtn.on("pointerdown", () => {
+    this.returnBtn.on("pointerdown", () => {
       const gameScene = this.scene.get("Game");
-       if (gameScene.gameMusic && gameScene.gameMusic.isPlaying) {
-        gameScene.gameMusic.stop(); // Parando a música do jogo antes de ir ao menu
+      if (gameScene.gameMusic && gameScene.gameMusic.isPlaying) {
+        gameScene.gameMusic.stop();
       }
       this.scene.stop("Game");
-      this.scene.start("MainMenu");  // Volta para o menu principal
-     this.scene.stop();
-      });
+      this.scene.start("MainMenu");
+      this.scene.stop();
+    });
 
-    // Ícone de Volume (🔉) com texto "Volume" abaixo
-    const volumeX = panelX - 70;
-    const volumeY = panelY + 40;
-
-    this.volumeIcon = this.add
-      .text(volumeX, volumeY, "🔉", {
-        fontSize: "36px",
-        color: "#FFD700",
-        fontFamily: "Arial Black",
+    // ➕ Novo botão: Reiniciar Jogo
+    this.restartBtn = this.add
+      .text(panelX, panelY, "Reiniciar Jogo", {
+        fontSize: "28px",
+        fill: "#FFD700",
+        fontFamily: "monospace",
+        fontStyle: "bold",
         stroke: "#000000",
-        strokeThickness: 4,
-        shadow: { offsetX: 3, offsetY: 3, color: "#000", blur: 6, fill: true },
+        strokeThickness: 3,
+        shadow: { offsetX: 2, offsetY: 2, color: "#000", blur: 4, fill: true },
       })
+      .setOrigin(0.5)
+      .setDepth(2)
+      .setInteractive({ useHandCursor: true });
+    this.restartBtn.on("pointerdown", () => {
+      const gameScene = this.scene.get("Game");
+      gameScene.scene.restart({ mapKey: 'map', health: 3 });
+      this.scene.stop();
+    });
+
+    // Volume UI
+    const volumeX = panelX - 70;
+    const volumeY = panelY + 60;
+
+    this.volumeIcon = this.add.text(volumeX, volumeY, "🔉", {
+      fontSize: "36px",
+      color: "#FFD700",
+      fontFamily: "Arial Black",
+      stroke: "#000000",
+      strokeThickness: 4,
+      shadow: { offsetX: 3, offsetY: 3, color: "#000", blur: 6, fill: true },
+    })
       .setOrigin(0.5)
       .setDepth(2)
       .setInteractive({ useHandCursor: true });
@@ -98,59 +117,54 @@ export class PauseMenu extends Scene {
       this.toggleVolumePanel();
     });
 
-    this.volumeLabel = this.add
-      .text(volumeX, volumeY + 40, "Volume", {
-        fontSize: "16px",
-        color: "#FFD700",
-        fontFamily: "Arial",
-        stroke: "#000000",
-        strokeThickness: 2,
-        shadow: { offsetX: 1, offsetY: 1, color: "#000", blur: 4, fill: true },
-      })
+    this.volumeLabel = this.add.text(volumeX, volumeY + 40, "Volume", {
+      fontSize: "16px",
+      color: "#FFD700",
+      fontFamily: "Arial",
+      stroke: "#000000",
+      strokeThickness: 2,
+      shadow: { offsetX: 1, offsetY: 1, color: "#000", blur: 4, fill: true },
+    })
       .setOrigin(0.5)
       .setDepth(2);
 
-    // Ícones de Mudo (🔇) e Som (🔈) com texto "Mute" abaixo
     const muteX = panelX + 70;
-    const muteY = panelY + 40;
+    const muteY = volumeY;
 
-    this.soundOnIcon = this.add
-      .text(muteX, muteY, "🔈", {
-        fontSize: "36px",
-        color: "#FFD700",
-        fontFamily: "Arial Black",
-        stroke: "#000000",
-        strokeThickness: 4,
-        shadow: { offsetX: 3, offsetY: 3, color: "#000", blur: 6, fill: true },
-      })
+    this.soundOnIcon = this.add.text(muteX, muteY, "🔈", {
+      fontSize: "36px",
+      color: "#FFD700",
+      fontFamily: "Arial Black",
+      stroke: "#000000",
+      strokeThickness: 4,
+      shadow: { offsetX: 3, offsetY: 3, color: "#000", blur: 6, fill: true },
+    })
       .setOrigin(0.5)
       .setDepth(2)
       .setInteractive({ useHandCursor: true });
 
-    this.soundOffIcon = this.add
-      .text(muteX, muteY, "🔇", {
-        fontSize: "36px",
-        color: "#FFD700",
-        fontFamily: "Arial Black",
-        stroke: "#000000",
-        strokeThickness: 4,
-        shadow: { offsetX: 3, offsetY: 3, color: "#000", blur: 6, fill: true },
-      })
+    this.soundOffIcon = this.add.text(muteX, muteY, "🔇", {
+      fontSize: "36px",
+      color: "#FFD700",
+      fontFamily: "Arial Black",
+      stroke: "#000000",
+      strokeThickness: 4,
+      shadow: { offsetX: 3, offsetY: 3, color: "#000", blur: 6, fill: true },
+    })
       .setOrigin(0.5)
       .setDepth(2)
       .setInteractive({ useHandCursor: true });
 
     this.soundOffIcon.setVisible(false);
 
-    this.muteLabel = this.add
-      .text(muteX, muteY + 40, "Mute", {
-        fontSize: "16px",
-        color: "#FFD700",
-        fontFamily: "Arial",
-        stroke: "#000000",
-        strokeThickness: 2,
-        shadow: { offsetX: 1, offsetY: 1, color: "#000", blur: 4, fill: true },
-      })
+    this.muteLabel = this.add.text(muteX, muteY + 40, "Mute", {
+      fontSize: "16px",
+      color: "#FFD700",
+      fontFamily: "Arial",
+      stroke: "#000000",
+      strokeThickness: 2,
+      shadow: { offsetX: 1, offsetY: 1, color: "#000", blur: 4, fill: true },
+    })
       .setOrigin(0.5)
       .setDepth(2);
 
@@ -168,12 +182,12 @@ export class PauseMenu extends Scene {
       this.soundOffIcon.setVisible(false);
     });
 
-    this.createVolumePanel(panelX, panelY + 110);
+    this.createVolumePanel(panelX, panelY + 140); 
   }
 
   createVolumePanel(x, y) {
     this.volumePanelBg = this.add
-      .rectangle(x - 70, y, 160, 50, 0x1e1e2f, 0.95)
+      .rectangle(x - 80, y, 160, 40, 0x1e1e2f, 0.95)
       .setStrokeStyle(3, 0xffd700)
       .setOrigin(0, 0.5)
       .setDepth(100)
@@ -190,7 +204,7 @@ export class PauseMenu extends Scene {
     const initialVolume = gameScene.gameMusic ? gameScene.gameMusic.volume : 0.5;
 
     this.volumeThumb = this.add
-      .rectangle(x - 55 + 120 * initialVolume, y, 16, 30, 0xffd700)
+      .rectangle(x - 65 + 120 * initialVolume, y, 16, 30, 0xffd700)
       .setOrigin(0.5)
       .setDepth(102)
       .setVisible(false)
