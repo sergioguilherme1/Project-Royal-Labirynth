@@ -59,7 +59,7 @@ const MAP_CONFIG = {
       { x: 912, y: 689 }
     ],
     hearts: [
-      { x: 512, y: 63 },
+      { x: 512, y: 260 },
       { x: 112, y: 295 },
       { x: 104, y: 400 },
       { x: 911, y: 551 },
@@ -132,7 +132,8 @@ export class Game extends Scene {
       this.gameMusic.stop();
     };
 
-    const mapKey = data?.mapKey || 'map';
+    //const mapKey = data?.mapKey || 'map';
+    const mapKey = 'map3';
     const config = MAP_CONFIG[mapKey] || {};
 
     const map = this.make.tilemap({ key: mapKey });
@@ -269,6 +270,10 @@ export class Game extends Scene {
     (config.hearts || []).forEach(pos => {
       const heart = this.heartsGroup.create(pos.x, pos.y, 'heart_item');
       heart.setScale(0.03);
+
+      if (pos.x === 512 && pos.y === 260) {
+        heart.setSize(2000);  // Aumenta o tamanho da hitbox
+      }
     });
     this.physics.add.overlap(this.player, this.heartsGroup, this.collectHeart, null, this);
 
@@ -529,6 +534,10 @@ export class Game extends Scene {
 
   collectHeart(player, heart) {
     heart.disableBody(true, true);
+
+    if (heart.x === 512 && heart.y === 260) {
+      this.removeFog(); // Remove o fog quando pega esse coração específico
+    }
 
     // Remove o coração do array para não tentar atualizar depois
     const index = this.hearts.indexOf(heart);

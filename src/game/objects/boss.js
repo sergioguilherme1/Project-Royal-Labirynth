@@ -17,8 +17,8 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     this.body.setImmovable(false);
     this.setDepth(15);
 
-    this.maxHealth = 10;
-    this.health = 10;
+    this.maxHealth = 15;
+    this.health = 15;
     this.alive = true;
 
     this.patrolSpeed = 20;

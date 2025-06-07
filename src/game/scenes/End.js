@@ -42,13 +42,6 @@ export class End extends Scene {
     showCredits() {
         const centerX = this.cameras.main.centerX;
 
-        const fim = this.add.text(0, 0, 'Fim.', {
-            fontFamily: 'PixelFont',
-            fontSize: 32,
-            color: '#ffffff',
-            align: 'center'
-        }).setOrigin(0.5);
-
         const logo = this.add.image(0, 60, 'logo')
           .setScale(0.5)
           .setAlpha(1)
@@ -74,7 +67,8 @@ export class End extends Scene {
         'ChatGPT — Por salvar o projeto\n' + 
         'mais vezes do que podemos contar\n\n' +
 
-        '💜 Obrigado por jogar!',
+        '💜 Obrigado por jogar!\n\n\n' +
+        'Clique na tela para retornar ao Menu Principal!',
         {
             fontFamily: 'PixelFont',
             fontSize: 20,
