@@ -542,14 +542,27 @@
  "tilesets":[
         {
          "columns":113,
-         "firstgid":1852,
-         "image":"assets/maps/assetsmap.png",
+         "firstgid":1,
+         "image":"All_tiles_v2.png",
          "imageheight":1212,
          "imagewidth":1808,
          "margin":0,
          "name":"assets",
          "spacing":0,
          "tilecount":8475,
+         "tileheight":16,
+         "tilewidth":16
+        }, 
+        {
+         "columns":113,
+         "firstgid":8476,
+         "image":"..\/OneDrive\/Documentos\/joguin\/All_tiles_v2.png",
+         "imageheight":1212,
+         "imagewidth":1808,
+         "margin":0,
+         "name":"assets",
+         "spacing":0,
+         "tilecount":0,
          "tileheight":16,
          "tilewidth":16
         }],
