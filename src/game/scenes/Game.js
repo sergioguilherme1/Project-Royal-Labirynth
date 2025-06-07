@@ -154,7 +154,8 @@ export class Game extends Scene {
     if (mainMenuScene) {
       this.savedVolume = mainMenuScene.savedVolume; // Recupera o volume
     }
-    this.gameMusic = this.sound.add("gameMusic", { loop: true, volume: this.savedVolume || 0.5 });
+    const volume = (typeof this.savedVolume === 'number' && isFinite(this.savedVolume)) ? this.savedVolume : 0.5;
+    this.gameMusic = this.sound.add("gameMusic", { loop: true, volume });
     this.gameMusic.play();
 
     // Player
@@ -165,7 +166,7 @@ export class Game extends Scene {
 
     //Boss
     if (mapKey === 'map3') {
-      this.gameMusic.setVolume(this.savedVolume); // Diminui música de fundo
+      this.gameMusic.setVolume(volume);
       this.dragonSound = this.sound.add("dragon-sound", { loop: true, volume: 0.8 });
       this.dragonSound.play();
       this.fireSound = this.sound.add("fire-sound", { loop: true, volume: 0.6 });
