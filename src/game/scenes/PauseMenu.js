@@ -69,13 +69,16 @@ export class PauseMenu extends Scene {
       .setDepth(2)
       .setInteractive({ useHandCursor: true });
       this.returnBtn.on("pointerdown", () => {
-      const gameScene = this.scene.get("Game");
-       if (gameScene && gameScene.gameMusic) {
-        gameScene.gameMusic.stop(); // Parando a música do jogo antes de ir ao menu
+    const gameScene = this.scene.get("Game");
+      if (gameScene) {
+        // Para músicas do jogo
+        if (gameScene.gameMusic) gameScene.gameMusic.stop();
+        if (gameScene.dragonSound) gameScene.dragonSound.stop();
+        if (gameScene.fireSound) gameScene.fireSound.stop();
       }
       this.scene.stop("Game");
       this.scene.start("MainMenu");  // Volta para o menu principal
-      });
+    });
 
     // Ícone de Volume (🔉) com texto "Volume" abaixo
     const volumeX = panelX - 70;
@@ -168,6 +171,15 @@ export class PauseMenu extends Scene {
     });
 
     this.createVolumePanel(panelX, panelY + 110);
+
+    this.escapeKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+  }
+
+  update() {
+    if (Phaser.Input.Keyboard.JustDown(this.escapeKey)) {
+      this.scene.stop();           // Fecha o menu de pausa
+      this.scene.resume('Game');   // Retoma o jogo
+    }
   }
 
   createVolumePanel(x, y) {

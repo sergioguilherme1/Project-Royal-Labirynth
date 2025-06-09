@@ -17,8 +17,8 @@ export default class Boss extends Phaser.Physics.Arcade.Sprite {
     this.body.setImmovable(false);
     this.setDepth(15);
 
-    this.maxHealth = 15;
-    this.health = 15;
+    this.maxHealth = 18;
+    this.health = 18;
     this.alive = true;
 
     this.patrolSpeed = 20;
@@ -142,6 +142,9 @@ updateHealthBar() {
 takeDamage(amount) {
   if (this.alive) {
     this.health -= amount;
+
+    this.scene.sound.play('dragonHit', { volume: 0.3 });
+
     this.updateHealthBar(); // Atualiza a barra de vida
     if (this.health <= 0) {
       this.die(); // Chama a função de morte caso a vida chegue a zero

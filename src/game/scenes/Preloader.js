@@ -29,6 +29,13 @@ export class Preloader extends Scene {
         this.load.tilemapTiledJSON('map2', 'maps/map2.json');
         this.load.tilemapTiledJSON('map3', 'maps/map3.json');
 
+        //Texto invisivel para carregar a fonte
+        this.add.text(0, 0, 'load', {
+            fontFamily: 'PixelFont',
+            fontSize: '1px',
+            color: '#000000',
+        }).setAlpha(0);
+
         // Áudios
         this.load.audio("click", "audio/click.mp3");
         this.load.audio("menuMusic", "audio/menu-theme.mp3");
@@ -40,6 +47,8 @@ export class Preloader extends Scene {
         this.load.audio('heartSound', 'audio/heart-sound.mp3');
         this.load.audio('dragon-sound', 'audio/dragon-sound.mp3');
         this.load.audio('fire-sound', 'audio/fire-sound.mp3');
+        this.load.audio('dragonHit', 'audio/dragon_hit.mp3'); 
+        this.load.audio('endTheme', 'audio/end-theme.mp3');
         
         // UI e itens
         this.load.image('heart_full', 'ui/heart_full.png');
@@ -47,6 +56,8 @@ export class Preloader extends Scene {
         this.load.image('coin', 'items/coin.png');
         this.load.image('coin_icon', 'ui/coin.png'); // moedas do mapa
         this.load.image('heart_item', 'items/heart_full.png'); // Corações do mapa
+        this.load.image('speechBubble', 'ui/speech-bubble.png');
+        this.load.image('speechBubble_happy', 'ui/speech-bubble-happy.png');
 
         //tela final
         this.load.image('fim', 'fim.png');

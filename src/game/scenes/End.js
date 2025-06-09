@@ -6,9 +6,12 @@ export class End extends Scene {
   }
 
   create() {
+    this.sound.stopAll();
+    this.endMusic = this.sound.add('endTheme', { loop: true, volume: 0.5 });
+    this.endMusic.play();
+
     this.cameras.main.setBackgroundColor(0x000000);
 
-    // Centro da tela
     const centerX = this.cameras.main.centerX;
     const centerY = this.cameras.main.centerY;
 
@@ -78,7 +81,6 @@ export class End extends Scene {
         }).setOrigin(0.5, 0);
 
         const creditsContainer = this.add.container(this.scale.width / 2, this.scale.height + 100, [
-            fim,
             logo,
             credits
         ]);
@@ -93,6 +95,7 @@ export class End extends Scene {
         });
 
         this.input.once('pointerdown', () => {
+            this.endMusic.stop(); 
             this.scene.start('MainMenu');
         });
     }

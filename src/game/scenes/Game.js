@@ -149,6 +149,27 @@ export class Game extends Scene {
     const objetos = map.createLayer('objetos', tiledset, 0, 0);
     objetos.setCollisionByProperty({ collides: true });
 
+    if (mapKey === 'map') {
+      const introText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'Encontre e salve a princesa', {
+        fontSize: '26px',
+        fill: '#ffffff',
+        fontFamily: 'PixelFont',
+        stroke: '#000000',
+        strokeThickness: 3,
+      })
+      .setOrigin(0.5)
+      .setDepth(100);
+
+      this.tweens.add({
+        targets: introText,
+        alpha: 0,
+        duration: 3000,
+        ease: 'Linear',
+        delay: 1000,
+        onComplete: () => introText.destroy()
+      });
+    }
+
 
     const mainMenuScene = this.scene.get('MainMenu');
     if (mainMenuScene) {
@@ -200,7 +221,11 @@ export class Game extends Scene {
             this.scene.start('End');  // Nome da cena para transição
           }
       });
-      
+
+      this.speechBubble = this.add.image(this.Princess.x, this.Princess.y - 15, 'speechBubble')
+        .setOrigin(0.2, 1)
+        .setScale(0.1)
+        .setDepth(20);    
     }
 
     // --- Lógica do Fog of War ---Add commentMore actions
@@ -361,7 +386,8 @@ export class Game extends Scene {
       right: Phaser.Input.Keyboard.KeyCodes.D,
       F: Phaser.Input.Keyboard.KeyCodes.F,
     });
-
+    this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    
     const centerX = this.cameras.main.centerX;
     const centerY = this.cameras.main.centerY;
     this.gameOverText = this.add.text(centerX, centerY - 20, "GAME OVER", {
@@ -386,6 +412,45 @@ export class Game extends Scene {
     this.isGameOver = false;
 
     this.createPauseGameButton();
+  }
+
+  update() {
+    if (this.isGameOver && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
+      this.scene.restart({ mapKey: 'map' });
+      return;
+    }
+
+    // Impede update se o jogo já acabou
+    if (this.isGameOver || !this.player || !this.player.active) {
+      return;
+    }
+
+    if (this.bossIsDead && this.speechBubble.texture.key !== 'speechBubble_happy') {
+      this.speechBubble.setTexture('speechBubble_happy');
+      this.speechBubble.setPosition(this.Princess.x, this.Princess.y - 12); // nova posição
+      this.speechBubble.setScale(0.09);
+      this.speechBubble.setOrigin(0.9, 1);
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(this.pauseKey)) {
+      this.scene.launch('PauseMenu');
+      this.scene.pause();
+      return;
+    }
+
+    updatePlayer(this.player, this.cursors, this.keys);
+    this.visionMaskGraphics.clear();
+    this.visionMaskGraphics.fillCircle(this.player.x, this.player.y, 70);
+
+    // Checar morte — redundante, mas seguro
+    if (this.player.health <= 0 && !this.player.isDying) {
+      this.checkPlayerDeath();
+      return;
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(this.keys.F)) {
+      this.attackEnemy();
+    }
   }
 
   createPauseGameButton() {
@@ -426,32 +491,6 @@ export class Game extends Scene {
     });
   }
 
-  update() {
-    if (this.isGameOver && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
-      this.scene.restart({ mapKey: 'map' });
-      return;
-    }
-
-    // Impede update se o jogo já acabou
-    if (this.isGameOver || !this.player || !this.player.active) {
-      return;
-    }
-
-    updatePlayer(this.player, this.cursors, this.keys);
-    this.visionMaskGraphics.clear();
-    this.visionMaskGraphics.fillCircle(this.player.x, this.player.y, 70);
-
-    // Checar morte — redundante, mas seguro
-    if (this.player.health <= 0 && !this.player.isDying) {
-      this.checkPlayerDeath();
-      return;
-    }
-
-    if (Phaser.Input.Keyboard.JustDown(this.keys.F)) {
-      this.attackEnemy();
-    }
-  }
-
   updateHearts() {
     // Verificar se `this.hearts` foi inicializado corretamente
     if (!this.hearts) {
@@ -469,8 +508,6 @@ export class Game extends Scene {
         }
       }
     }
-
-    console.log("Vida do jogador:", this.player.health);
 
     // Verifica se a vida do jogador chegou a 0
     if (this.player.health <= 0 && !this.isGameOver) {
@@ -558,7 +595,6 @@ export class Game extends Scene {
     const now = this.time.now;
     if (now < this.attackCooldown) return;
 
-    console.log("Atacando inimigos...");  // Logando quando o ataque é feito
     this.attackCooldown = now + 500;
 
     const range = 60;
@@ -585,10 +621,18 @@ export class Game extends Scene {
 
       if (distance <= range) {
         this.boss.takeDamage(1); // Aplica dano ao boss
-        //this.sound.play('dragonHit');
-        console.log("Dano no Boss!");
       }
     }
+  }
+
+  startPlayerAttack() {
+    if (!this.player || this.player.isDying) return;
+
+    const animKey = `attack_${this.player.lastDirection}`;
+    this.player.setVelocity(0);
+    this.player.anims.play(animKey, true);
+    this.sound.play('attack');
+    this.attackEnemy();
   }
 
   removeFog() {
