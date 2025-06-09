@@ -8,7 +8,7 @@ body {
     url('assets/backgrounds/painel1.png'); /* direita */
   background-repeat: repeat-y, repeat-y;
   background-position: left, right;
-  background-size: 340px 100%;
+  background-size: 300px 100%;
   display: flex;
   justify-content: center;
   align-items: center;
