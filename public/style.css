@@ -2,7 +2,7 @@ body {
   margin: 0;
   padding: 0;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #181425;
+  background-color: #001121;
   background-image:
     url('assets/backgrounds/painel2.png'), /* esquerda */
     url('assets/backgrounds/painel1.png'); /* direita */
