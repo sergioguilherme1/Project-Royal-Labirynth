@@ -127,17 +127,17 @@ export class Game extends Scene {
   }
 
   create(data) {
-
+    // Para a música do jogo ao iniciar uma nova fase
     if (this.gameMusic && this.gameMusic.isPlaying) {
       this.gameMusic.stop();
     };
-
+    //Configurações para iniciar os mapas
     const mapKey = data?.mapKey || 'map';
-    const config = MAP_CONFIG[mapKey] || {};
+    const config = MAP_CONFIG[mapKey] || {}; // Pega as configurações do mapa
 
     const map = this.make.tilemap({ key: mapKey });
-    const tiledset = map.addTilesetImage('assets', 'tiles');
-
+    const tiledset = map.addTilesetImage('assets', 'tiles'); // Carrega o tileset
+    // Criação das camadas do mapa
     map.createLayer('fundo preto', tiledset, 0, 0);
     map.createLayer('chao', tiledset, 0, 0);
     const parede = map.createLayer('parede', tiledset, 0, 0);
@@ -148,7 +148,7 @@ export class Game extends Scene {
     map.createLayer('detalhes', tiledset, 0, 0);
     const objetos = map.createLayer('objetos', tiledset, 0, 0);
     objetos.setCollisionByProperty({ collides: true });
-
+    //Texto inicial no mapa 1
     if (mapKey === 'map') {
       const introText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'Encontre e salve a princesa', {
         fontSize: '26px',
@@ -170,29 +170,29 @@ export class Game extends Scene {
       });
     }
 
-
+    // Música de fundo
     const mainMenuScene = this.scene.get('MainMenu');
     if (mainMenuScene) {
-      this.savedVolume = mainMenuScene.savedVolume; // Recupera o volume
+      this.savedVolume = mainMenuScene.savedVolume; // Recupera o volume salvo
     }
     const volume = (typeof this.savedVolume === 'number' && isFinite(this.savedVolume)) ? this.savedVolume : 0.5;
     this.gameMusic = this.sound.add("gameMusic", { loop: true, volume });
-    this.gameMusic.play();
+    this.gameMusic.play(); // Toca a música do jogo
 
-    // Player
+    // Criação do player
     const spawn = config.spawn || { x: 0, y: 0 };
     this.player = createPlayer(this, spawn.x, spawn.y);
     this.player.health = data?.health ?? 3;
     this.player.maxHealth = 5;
 
-    //Boss
+    //Criações no mapa3
     if (mapKey === 'map3') {
       this.gameMusic.setVolume(volume);
       this.dragonSound = this.sound.add("dragon-sound", { loop: true, volume: 0.8 });
       this.dragonSound.play();
       this.fireSound = this.sound.add("fire-sound", { loop: true, volume: 0.6 });
       this.fireSound.play();
-
+      // Criando o Boss
       createBossAnimations(this);
       const bossPatrol = [
         { x: 511, y: 295 },
@@ -206,51 +206,47 @@ export class Game extends Scene {
 
       this.physics.add.collider(this.boss, parede);
       this.physics.add.collider(this.boss, this.player);
-
+      // Criando a princesa
       this.Princess = createPrincess(this, 511, 384); 
+      // Colisões da princesa
       this.physics.add.collider(this.Princess, this.boss, () => {
         this.Princess.setVelocity(0);
       });
-
-      
-
       this.physics.add.collider(this.Princess, this.player, () => {
         this.Princess.setVelocity(0);
           if (this.bossIsDead) {
             // Se o Boss estiver morto, muda para a cena "end"
-            this.scene.start('End');  // Nome da cena para transição
+            this.scene.start('End');
           }
       });
-
+      // Balão de fala da princesa
       this.speechBubble = this.add.image(this.Princess.x, this.Princess.y - 15, 'speechBubble')
         .setOrigin(0.2, 1)
         .setScale(0.1)
         .setDepth(20);    
     }
-
-    // --- Lógica do Fog of War ---Add commentMore actions
-    // Cria a camada preta opaca que cobre o mapa
+    // Lógica do Fog of War
     this.fogOfWar = this.add.graphics()
-      .fillStyle(0x000000, 0.98) // Cor preta com 95% de opacidade
+      .fillStyle(0x000000, 0.98)
       .fillRect(0, 0, this.cameras.main.width, this.cameras.main.height)
       .setScrollFactor(0) // Fixa na câmera
       .setDepth(99);
     this.fogOfWar.alpha = 0; 
 
-    // Cria o gráfico que define a área visível do jogador (a "janela" no fog)
+    // Criando a janela de visão
     this.visionMaskGraphics = this.add.graphics()
       .fillCircle(this.player.x, this.player.y, 80) // Círculo de visão em torno do jogador
-      .setScrollFactor(0); // Fixa na câmera
+      .setScrollFactor(0);
     this.visionMaskGraphics.alpha = 0;
 
     // Aplica a máscara invertida: a área do círculo será transparente, o resto opaco
     this.fogOfWar.mask = new Phaser.Display.Masks.GeometryMask(this, this.visionMaskGraphics);
     this.fogOfWar.mask.invertAlpha = true;
-
+    // Animação de transição para o "fog of war"
     this.tweens.add({
       targets: this.fogOfWar,
-      alpha: 0.99,  // A neblina fica visível
-      duration: 2000,  // Duração do efeito (3 segundos)
+      alpha: 0.99,
+      duration: 2000,
       ease: 'Linear'
     });
 
@@ -304,7 +300,6 @@ export class Game extends Scene {
     const cameraWidth = this.cameras.main.width;
     const topY = 5;
     const hudWidth = 250;
-    // Canto superior direito
     const baseX = cameraWidth - hudWidth - 70;
 
     this.add.graphics()
@@ -377,7 +372,7 @@ export class Game extends Scene {
 
     fim.setCollisionByExclusion([-1]);
 
-    // Teclado
+    // Configurações do teclado
     this.cursors = this.input.keyboard.createCursorKeys();
     this.keys = this.input.keyboard.addKeys({
       up: Phaser.Input.Keyboard.KeyCodes.W,
@@ -387,7 +382,7 @@ export class Game extends Scene {
       F: Phaser.Input.Keyboard.KeyCodes.F,
     });
     this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
-    
+    // Texto de Game Over
     const centerX = this.cameras.main.centerX;
     const centerY = this.cameras.main.centerY;
     this.gameOverText = this.add.text(centerX, centerY - 20, "GAME OVER", {
@@ -408,23 +403,25 @@ export class Game extends Scene {
       .setScrollFactor(0)
       .setDepth(100) 
       .setVisible(false);
-
+    //Incia como Game Over = false
     this.isGameOver = false;
-
+    // Botão de pause
     this.createPauseGameButton();
   }
 
   update() {
+    // Reinicia o jogo ao pressionar R
     if (this.isGameOver && Phaser.Input.Keyboard.JustDown(this.restartKey)) {
       this.scene.restart({ mapKey: 'map' });
       return;
     }
 
-    // Impede update se o jogo já acabou
+    // Impede update se o jogo já acabou ou se o player está desativado
     if (this.isGameOver || !this.player || !this.player.active) {
       return;
     }
 
+    // Atualiza o balão de fala quando o boss morre
     if (this.bossIsDead && this.speechBubble.texture.key !== 'speechBubble_happy') {
       this.speechBubble.setTexture('speechBubble_happy');
       this.speechBubble.setPosition(this.Princess.x, this.Princess.y - 12); // nova posição
@@ -432,27 +429,30 @@ export class Game extends Scene {
       this.speechBubble.setOrigin(0.9, 1);
     }
 
+    // Pausa o jogo ao pressionar a tecla ESC
     if (Phaser.Input.Keyboard.JustDown(this.pauseKey)) {
       this.scene.launch('PauseMenu');
       this.scene.pause();
       return;
     }
 
+    // Atualiza o movimento do jogador
     updatePlayer(this.player, this.cursors, this.keys);
     this.visionMaskGraphics.clear();
     this.visionMaskGraphics.fillCircle(this.player.x, this.player.y, 70);
 
-    // Checar morte — redundante, mas seguro
+    // Checar morte do player
     if (this.player.health <= 0 && !this.player.isDying) {
       this.checkPlayerDeath();
       return;
     }
 
+    // Realiza o ataque ao pressionar a tecla F
     if (Phaser.Input.Keyboard.JustDown(this.keys.F)) {
       this.attackEnemy();
     }
   }
-
+  // Cria o botão de pausa
   createPauseGameButton() {
     const xBase = this.cameras.main.width - 40;
     const yBase = 24;
@@ -474,7 +474,7 @@ export class Game extends Scene {
     })
       .setOrigin(0.5)
     this.pauseGameButton.add(pauseText);
-
+    // Adiciona efeitos de hover no botão de pausa
     pauseBtnBg.on("pointerover", () => {
       pauseBtnBg.setFillStyle(0x294d77);
       pauseText.setColor("#ffffff");
@@ -492,12 +492,12 @@ export class Game extends Scene {
   }
 
   updateHearts() {
-    // Verificar se `this.hearts` foi inicializado corretamente
+    // Verificar se `this.hearts` foi inicializado
     if (!this.hearts) {
       return;
     }
 
-    // Atualizar a exibição de corações com base na vida do jogador
+    // Atualiza os corações na HUD
     for (let i = 0; i < this.player.maxHealth; i++) {
       const heart = this.hearts[i];
       if (heart) {
@@ -520,17 +520,16 @@ export class Game extends Scene {
   checkPlayerDeath() {
     console.log("Verificando a morte do jogador...");
 
-    // Se o jogo já estiver terminado ou o jogador estiver morrendo, não faz nada
+    // Impede morte do jogador se já estiver em animação de morte ou se o jogo já terminou
     if (this.isGameOver || !this.player || this.player.isDying) {
       console.log("O jogo já terminou ou o jogador está em animação de morte.");
       return;
     }
 
-    // Imediatamente pausa o jogo e chama o game over
+    // Pausa o jogo e começa o game over
     this.isGameOver = true;
-    this.player.setVelocity(0);  // Para o movimento do jogador
-    this.physics.pause();  // Pausa a física do jogo
-
+    this.player.setVelocity(0);  
+    this.physics.pause();  
     if (this.gameMusic) {
       this.gameMusic.stop();
     }
@@ -546,41 +545,35 @@ export class Game extends Scene {
     });
 
     this.coins.clear(true, true);  // Remove todas as moedas da tela
-    this.coinCount = 0;  // Reseta a contagem de moedas
+    this.coinCount = 0;
     this.coinText.setText(this.coinCount.toString()); 
   }
-
+  // Exibe o texto de Game Over imediatamente
   handleGameOver() {
-
-    // Exibe o texto de Game Over imediatamente
     this.gameOverText.setVisible(true);
     this.restartText.setVisible(true); 
-    
-    // Exibe o texto para reiniciar
   }
 
   collectCoin(player, coin) {
-    coin.disableBody(true, true);
+    coin.disableBody(true, true); // Remove a moeda quando coletada
     this.coinCount++;
-    this.coinText.setText(this.coinCount);
+    this.coinText.setText(this.coinCount); // Atualiza a quantidade de moedas
     this.coinSound = this.sound.add('coinSound');
     this.coinSound.play();
     this.coinSound.setVolume(0.4);
   }
 
   collectHeart(player, heart) {
-    heart.disableBody(true, true);
+    heart.disableBody(true, true); // Remove o coração quando coletado
 
     if (heart.x === 512 && heart.y === 260) {
-      this.removeFog(); // Remove o fog quando pega esse coração específico
+      this.removeFog(); // Remove o fog ao pegar um coração específico (cena final do jogo)
     }
-
     // Remove o coração do array para não tentar atualizar depois
     const index = this.hearts.indexOf(heart);
     if (index > -1) {
       this.hearts.splice(index, 1);
     }
-
     if (this.player.health < this.player.maxHealth) {
       this.player.health++;
       this.updateHearts();
@@ -590,7 +583,7 @@ export class Game extends Scene {
     this.heartSound.play();
     this.heartSound.setVolume(0.4);
   }
-
+  //Ataque do player a inimigos
   attackEnemy() {
     const now = this.time.now;
     if (now < this.attackCooldown) return;
@@ -624,17 +617,16 @@ export class Game extends Scene {
       }
     }
   }
-
   startPlayerAttack() {
     if (!this.player || this.player.isDying) return;
 
     const animKey = `attack_${this.player.lastDirection}`;
     this.player.setVelocity(0);
-    this.player.anims.play(animKey, true);
+    this.player.anims.play(animKey, true); // Executa a animação de ataque
     this.sound.play('attack');
-    this.attackEnemy();
+    this.attackEnemy(); // Chama o ataque no inimigo
   }
-
+  // Remove o "fog of war" para a cena final
   removeFog() {
     this.tweens.add({
       targets: this.fogOfWar,

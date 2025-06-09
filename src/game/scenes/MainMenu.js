@@ -102,10 +102,10 @@ export class MainMenu extends Scene {
     this.createSettingsButton();
     this.createSettingsPanel();
 
-    // Botão Instagram no canto inferior esquerdo com ícone vetorial
+    // Botão Instagram no canto inferior
     this.createInstagramButton();
 
-    // ➕ Novo botão: Assistir vídeo no YouTube
+    // Assistir vídeo no YouTube
     this.createYoutubeButton();
   }
 

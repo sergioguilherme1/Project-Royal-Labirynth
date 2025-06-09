@@ -1,69 +1,17 @@
 # 🌀 Royal Labyrinth 👑
 
-Royal Labyrinth é um jogo 2D em pixel art onde o jogador controla um príncipe corajoso em busca de sua princesa perdida. Enfrentando labirintos perigosos, inimigos desafiadores e obstáculos traiçoeiros, o jogador deve explorar, coletar moedas e chegar até o fim.
+Royal Labyrinth é um jogo 2D em pixel art onde o jogador assume o papel de um príncipe corajoso, em uma missão para salvar sua princesa. Enfrentando labirintos perigosos, inimigos traiçoeiros e obstáculos desafiadores, o objetivo é explorar, coletar itens e derrotar o chefão para resgatar a princesa.
 
 ## 🎮 Tecnologias Utilizadas
 
-- [Phaser 3](https://phaser.io/) – motor de jogo 2D
-- [Tiled Map Editor](https://www.mapeditor.org/) – criação de mapas e camadas
-- Webpack – empacotamento e build do projeto
-- JavaScript
+- [Phaser 3](https://phaser.io/) – Motor de jogo 2D
+- [Tiled Map Editor](https://www.mapeditor.org/) – Ferramenta para criação de mapas e camadas
+- [Webpack](https://webpack.js.org/) – Empacotamento e build do projeto
+- [JavaScript](https://www.javascript.com/) – Linguagem principal do jogo
+- [HTML5](https://www.w3.org/TR/html5/) – Para a construção da interface web
+- [CSS3](https://www.w3.org/Style/CSS/) – Estilização responsiva e visual do jogo
 
 ## 🗂️ Estrutura de Pastas
 
-```
-├── public/
-│   └── assets/              # Imagens, mapas e spritesheets
-├── src/
-│   ├── game/
-│   │   ├── scenes/          # Cenas (Boot, Preloader, Game, etc.)
-│   │   └── objects/         # Player e entidades
-│   └── main.js              # Ponto de entrada
-├── index.html
-├── package.json
-├── webpack.config.js
-└── README.md
-```
+A estrutura de pastas do projeto é organizada da seguinte maneira:
 
-## 🚀 Como Rodar o Projeto
-
-1. Instale as dependências:
-
-```bash
-npm install
-```
-
-2. Rode o projeto em modo desenvolvimento:
-
-```bash
-npm run start
-```
-
-3. Acesse no navegador:
-
-```
-http://localhost:8080
-```
-
-4. Para gerar a versão de produção:
-
-```bash
-npm run build
-```
-
-## 🎮 Controles do Jogo
-
-- Setas do teclado (↑ ↓ ← →): movimentar o personagem
-- Tecla F: ataque
-
-## 📦 Funcionalidades Atuais
-
-- Mapa carregado via Tiled (.json)
-- Animação de idle para 4 direções (frente, costas, esquerda e direita)
-- Colisões com camadas do mapa
-- Sistema de cenas: Boot → Preloader → Menu → Game
-
-## 📌 Créditos
-
-Sprites e tiles utilizados são de uso livre ou autoria do grupo de desenvolvimento.  
-Desenvolvido como projeto de estudo com Phaser 3.
