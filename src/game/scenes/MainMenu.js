@@ -406,7 +406,7 @@ export class MainMenu extends Scene {
       .setDepth(31);
 
     const instructions = `Objetivo:
-- Encontre a saída do labirinto e escape!
+- Encontre e salve a princesa raptada pelo dragão e escape do labirinto!
 
 Controles:
 - Movimentar: Setas ou WASD
@@ -414,7 +414,8 @@ Controles:
 - Pausar música: Botão canto inferior direito
 
 Dicas:
-- Colete moedas para aumentar sua pontuação
+- Colete o máximo de vidas que puder
+- Use a visão do mapa inicial para se orientar
 - Evite ou derrote inimigos com ataques
 - Explore bem o labirinto para encontrar itens secretos
 
