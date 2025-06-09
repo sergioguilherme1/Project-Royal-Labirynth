@@ -104,8 +104,67 @@ export class MainMenu extends Scene {
 
     // Botão Instagram no canto inferior esquerdo com ícone vetorial
     this.createInstagramButton();
+
+    // ➕ Novo botão: Assistir vídeo no YouTube
+    this.createYoutubeButton();
   }
 
+  // Botão YouTube
+createYoutubeButton() {
+  const xBase = 100; // Posiciona o botão mais à direita do Instagram (margem direita)
+  const yBase = 720; // Mantém a mesma altura do botão do Instagram
+
+  this.youtubeButton = this.add.container(xBase, yBase);
+
+  const youtubeButtonBg = this.add
+    .rectangle(0, 0, 50, 50, 0x1e1e2f)
+    .setStrokeStyle(3, 0xffd700)
+    .setInteractive({ useHandCursor: true });
+  this.youtubeButton.add(youtubeButtonBg);
+
+  // Ícone do YouTube (simbolizando o logo do YouTube)
+  const icon = this.add.graphics();
+  icon.lineStyle(3, 0xffd700);
+  icon.fillStyle(0xff0000);
+
+  // Criando um "quadrado" do logo do YouTube com bordas arredondadas
+  const size = 24;
+  const radius = 6;
+  icon.strokeRoundedRect(-size / 2, -size / 2, size, size, radius);
+
+  // Centralizando o triângulo (símbolo de play dentro do logo)
+  icon.fillTriangle(-size / 6, -size / 3, size / 3, 0, -size / 6, size / 3);
+
+  icon.setDepth(1);
+  icon.setPosition(0, 0);
+  this.youtubeButton.add(icon);
+
+  youtubeButtonBg.on("pointerover", () => {
+    youtubeButtonBg.setFillStyle(0x294d77);
+    icon.clear();
+    icon.lineStyle(3, 0xffffff);
+    icon.fillStyle(0xffffff);
+
+    icon.strokeRoundedRect(-size / 2, -size / 2, size, size, radius);
+    icon.fillTriangle(-size / 6, -size / 3, size / 3, 0, -size / 6, size / 3);
+  });
+
+  youtubeButtonBg.on("pointerout", () => {
+    youtubeButtonBg.setFillStyle(0x1e1e2f);
+    icon.clear();
+    icon.lineStyle(3, 0xffd700);
+    icon.fillStyle(0xffd700);
+
+    icon.strokeRoundedRect(-size / 2, -size / 2, size, size, radius);
+    icon.fillTriangle(-size / 6, -size / 3, size / 3, 0, -size / 6, size / 3);
+  });
+
+  youtubeButtonBg.on("pointerdown", () => {
+    window.open("https://youtu.be/BdcPKom7bus", "_blank");
+  });
+}
+
+  // Botão Instagram no canto inferior esquerdo com ícone vetorial
   createInstagramButton() {
     const xBase = 40; // canto inferior esquerdo, margem da esquerda
     const yBase = 720; // mesma altura dos outros botões

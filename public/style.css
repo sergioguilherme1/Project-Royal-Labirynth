@@ -18,3 +18,100 @@ body {
   font-family: 'PixelFont';
   src: url('assets/fonts/PressStart2P-Regular.ttf') format('truetype');
 }
+
+body {
+  margin: 0;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #001124;
+  background-image:
+    url('assets/backgrounds/painel2.png'), /* esquerda */
+    url('assets/backgrounds/painel1.png'); /* direita */
+  background-repeat: repeat-y, repeat-y;
+  background-position: left, right;
+  background-size: 0px 100%; /* Inicialmente sem imagens */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Remover imagens para telas menores que 1040px */
+@media (max-width: 1492px) {
+  body {
+    background-image: none; /* Remove as imagens laterais */
+  }
+}
+
+@media (min-width: 1493px) and (max-width: 1508px) {
+  body {
+    background-size: 190px 100%; /* Imagens bem pequenas */
+  }
+}
+
+@media (min-width: 1509px) and (max-width: 1530px) {
+  body {
+    background-size: 200px 100%; /* Imagens bem pequenas */
+  }
+}
+
+@media (min-width: 1531px) and (max-width: 1550px) {
+  body {
+    background-size: 210px 100%; /* Imagens bem pequenas */
+  }
+}
+
+@media (min-width: 1550px) and (max-width: 1590px) {
+  body {
+    background-size: 220px 100%; /* Imagens bem pequenas */
+  }
+}
+
+/* Telas entre 1040px e 1400px (notebooks pequenos) */
+@media (min-width: 1591px) and (max-width: 1611px) {
+  body {
+    background-size: 240px 100%; /* Imagens bem pequenas */
+  }
+}
+
+@media (min-width: 1612px) and (max-width: 1649px) {
+  body {
+    background-size: 250px 100%; /* Imagens pequenas, mas visíveis */
+  }
+}
+
+/* Telas de 1400px até 1600px (notebooks maiores) */
+@media (min-width: 1650px) and (max-width: 1706px) {
+  body {
+    background-size: 270px 100%; /* Imagens pequenas, mas visíveis */
+  }
+}
+
+/* Telas de 1600px até 1920px (monitores grandes) */
+@media (min-width: 1706px) and (max-width: 1920px) {
+  body {
+    background-size: 300px 100%; /* Imagens maiores */
+  }
+}
+
+/* Telas ultra grandes (acima de 1920px) */
+@media (min-width: 1920px) {
+  body {
+    background-size: 350px 100%; /* Imagens bem grandes */
+  }
+}
+
+/* O #app continua com largura 100% e altura 100vh */
+#app {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@font-face {
+  font-family: 'PixelFont';
+  src: url('assets/fonts/PressStart2P-Regular.ttf') format('truetype');
+}
