@@ -449,7 +449,7 @@ export class Game extends Scene {
 
     // Realiza o ataque ao pressionar a tecla F
     if (Phaser.Input.Keyboard.JustDown(this.keys.F)) {
-      this.attackEnemy();
+      this.startPlayerAttack();
     }
   }
   // Cria o botão de pausa

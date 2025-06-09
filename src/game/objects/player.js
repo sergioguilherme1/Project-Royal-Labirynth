@@ -123,7 +123,6 @@ export const updatePlayer = (player, cursors, keys) => {
   const right = cursors.right.isDown || keys.right.isDown;
   const up = cursors.up.isDown || keys.up.isDown;
   const down = cursors.down.isDown || keys.down.isDown;
-  const keyf = Phaser.Input.Keyboard.JustDown(keys.F);
 
   if (left) {
     player.setVelocityX(-speed);
@@ -145,14 +144,6 @@ export const updatePlayer = (player, cursors, keys) => {
     player.anims.play('walk_down', true);
     player.lastDirection = 'down';
     moving = true;
-  }
-
-  if (keyf) {
-    const animKey = `attack_${player.lastDirection}`;
-    player.setVelocity(0);
-    player.anims.play(animKey, true);
-    player.scene.sound.play('attack');
-    return;
   }
 
   if (!moving) {
